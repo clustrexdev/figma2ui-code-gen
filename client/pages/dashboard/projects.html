@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fig2UI - Projects</title>
+  <meta name="description" content="Collection of projects the user has done associated with teams" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Custom styles */
+    .sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* gap-3 */
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem;
+  padding-top: 0.5rem; /* py-2 */
+  padding-bottom: 0.5rem;
+  border-radius: 0.375rem; /* rounded-md */
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar-item:hover {
+  background-color: rgba(var(--tw-color-sidebar-accent), 0.2); /* hover:bg-sidebar-accent/20 */
+}
+
+.sidebar-item.active {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.project-card {
+  background-color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem; /* rounded-lg */
+  overflow: hidden;
+  transition: all 0.2s ease-in-out;
+}
+
+.project-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* hover:shadow-md */
+  transform: scale(1.01); /* hover:scale-[1.01] */
+}
+
+.card-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px; /* rounded-full */
+  padding-left: 0.5rem; /* px-2 */
+  padding-right: 0.5rem;
+  padding-top: 0.25rem; /* py-1 */
+  padding-bottom: 0.25rem;
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 500; /* font-medium */
+}
+    :root {
+        --color-clifford: #da373d;
+      --radius: 0.5rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.141 0.005 285.823);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.141 0.005 285.823);
+      --popover: oklch(1 0 0);
+      --popover-foreground: oklch(0.141 0.005 285.823);
+      --primary: oklch(0.606 0.25 292.717);
+      --primary-foreground: oklch(0.969 0.016 293.756);
+      --secondary: oklch(0.967 0.001 286.375);
+      --secondary-foreground: oklch(0.21 0.006 285.885);
+      --muted: oklch(0.967 0.001 286.375);
+      --muted-foreground: oklch(0.552 0.016 285.938);
+      --accent: oklch(0.967 0.001 286.375);
+      --accent-foreground: oklch(0.21 0.006 285.885);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.92 0.004 286.32);
+      --input: oklch(0.92 0.004 286.32);
+      --ring: oklch(0.606 0.25 292.717);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.141 0.005 285.823);
+      --sidebar-primary: oklch(0.606 0.25 292.717);
+      --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+      --sidebar-accent: oklch(0.967 0.001 286.375);
+      --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+      --sidebar-border: oklch(0.92 0.004 286.32);
+      --sidebar-ring: oklch(0.606 0.25 292.717);
+    }
+    .dark {
+      --background: oklch(0.141 0.005 285.823);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.21 0.006 285.885);
+      --card-foreground: oklch(0.985 0 0);
+      --popover: oklch(0.21 0.006 285.885);
+      --popover-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.541 0.281 293.009);
+      --primary-foreground: oklch(0.969 0.016 293.756);
+      --secondary: oklch(0.274 0.006 286.033);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.274 0.006 286.033);
+      --muted-foreground: oklch(0.705 0.015 286.067);
+      --accent: oklch(0.274 0.006 286.033);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.541 0.281 293.009);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+      --sidebar: oklch(0.21 0.006 285.885);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.541 0.281 293.009);
+      --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+      --sidebar-accent: oklch(0.274 0.006 286.033);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --sidebar-ring: oklch(0.541 0.281 293.009);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-foreground dark">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-sidebar text-sidebar-foreground border-r border-slate-900/10 flex flex-col">
+      <a href="/client/index.html" class="p-4 flex items-center gap-2 border-b border-slate-900/10">
+        <img src="../../assets/logo.png" class="w-8 h-8 object-cover" />
+          <h1 class="text-lg font-bold">Fig2UI</h1>
+      </a>
+      
+      <nav class="p-2 flex-1">
+        <div class="mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">APPLICATIONS</div>
+        <a href="/client/pages/dashboard/overview.html" class="sidebar-item">
+          <i class="fa-solid fa-house w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/client/pages/dashboard/projects.html" class="sidebar-item active">
+          <i class="fa-solid fa-folder w-5 h-5"></i>
+          <span>Projects</span>
+        </a>
+        <a href="/client/pages/dashboard/teams.html" class="sidebar-item">
+          <i class="fa-solid fa-users w-5 h-5"></i>
+          <span>Teams</span>
+        </a>
+        <a href="/client/pages/dashboard/components.html" class="sidebar-item">
+          <i class="fa-solid fa-gear w-5 h-5"></i>
+          <span>Components</span>
+        </a>
+        
+        <div class="mt-6 mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">WORKSPACE</div>
+        <a href="/client/pages/dashboard/providers.html" class="sidebar-item">
+          <i class="fa-solid fa-user-group w-5 h-5"></i>
+          <span>Providers</span>
+        </a>
+        <a href="/client/pages/dashboard/deployments.html" class="sidebar-item">
+          <i class="fa-solid fa-star w-5 h-5"></i>
+          <span>Deployments</span>
+        </a>
+        <a href="/client/pages/dashboard/notifications.html" class="sidebar-item">
+          <i class="fa-solid fa-clock-rotate-left w-5 h-5"></i>
+          <span>Notifications</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-slate-900/10">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">U</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">User Name</p>
+            <p class="text-xs text-muted-foreground truncate">user@example.com</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Main content -->
+    <div class="flex-1 flex flex-col">
+      <!-- Navbar -->
+      <header class="h-16 border-b border-slate-900/10 flex items-center justify-between px-6">
+        <div class="flex items-center gap-4">
+          <h2 class="text-lg font-semibold">Projects</h2>
+          <div class="text-sm text-muted-foreground">Manage your Figma projects</div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></i>
+            <input type="text" placeholder="Search projects..." class="pl-9 pr-4 py-2 rounded-md border border-input bg-background w-64 focus:outline-none focus:ring-2 focus:ring-ring">
+          </div>
+          
+          <button class="w-9 h-9 rounded-full flex items-center justify-center border border-input hover:bg-accent hover:text-accent-foreground">
+            <i class="fa-solid fa-bell"></i>
+          </button>
+        </div>
+      </header>
+      
+      <!-- Page content -->
+      <div class="flex-1 p-6 overflow-auto">
+        <div class="mb-6">
+          <h1 class="text-2xl font-bold mb-2">Clustrex Projects</h1>
+          <p class="text-muted-foreground">View and manage your Figma projects from Clustrex team</p>
+        </div>
+        
+        <!-- Project grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Project 1 -->
+          <div class="project-card">
+            <div class="aspect-video w-full bg-muted/30 overflow-hidden relative">
+              <img src="https://s3-alpha.figma.com/thumbnails/8d9119e0-721b-4aa5-a6d3-8ae28f3c6dd8?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQ4GOSFWC2T2NV3B2%2F20250508%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250508T000000Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=e1c08be32ba2dff3552b4a577e964cfc8a5b437405940d72de84eb550534bdaa" alt="Emmanuel SDE's team library" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div class="absolute bottom-3 right-3">
+                <span class="card-badge bg-secondary/80 text-secondary-foreground">Team Library</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-semibold">Emmanuel SDE's team library</h3>
+                <button class="text-muted-foreground hover:text-foreground">
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+              </div>
+              <div class="text-sm text-muted-foreground mb-4">Last modified: Apr 22, 2025</div>
+              <div class="flex justify-between items-center">
+                <div class="flex -space-x-2">
+                  <div class="h-8 w-8 rounded-full bg-chart-1 flex items-center justify-center text-white text-xs">ES</div>
+                  <div class="h-8 w-8 rounded-full bg-chart-2 flex items-center justify-center text-white text-xs">JD</div>
+                </div>
+                <button class="text-sm text-primary hover:underline">Open in Figma</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Project 2 -->
+          <div class="project-card">
+            <div class="aspect-video w-full bg-muted/30 overflow-hidden relative">
+              <img src="https://s3-alpha.figma.com/thumbnails/31c99e36-53d4-44c8-ba24-09006f3c872c?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQ4GOSFWC2T2NV3B2%2F20250508%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250508T000000Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=7a67ee5c9942075bdb5fb091c75a8b5cab5b4390959a1225ffffb40a0a8d8594" alt="Multi Agent Design" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div class="absolute bottom-3 right-3">
+                <span class="card-badge bg-primary/80 text-primary-foreground">Active</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-semibold">Multi Agent Design</h3>
+                <button class="text-muted-foreground hover:text-foreground">
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+              </div>
+              <div class="text-sm text-muted-foreground mb-4">Last modified: Apr 23, 2025</div>
+              <div class="flex justify-between items-center">
+                <div class="flex -space-x-2">
+                  <div class="h-8 w-8 rounded-full bg-chart-3 flex items-center justify-center text-white text-xs">AM</div>
+                  <div class="h-8 w-8 rounded-full bg-chart-4 flex items-center justify-center text-white text-xs">RK</div>
+                  <div class="h-8 w-8 rounded-full bg-chart-5 flex items-center justify-center text-white text-xs">+3</div>
+                </div>
+                <button class="text-sm text-primary hover:underline">Open in Figma</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Project 3 -->
+          <div class="project-card">
+            <div class="aspect-video w-full bg-muted/30 overflow-hidden relative">
+              <img src="https://s3-alpha.figma.com/thumbnails/97610a16-7b1e-4a7b-91f6-ab2252dded00?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQ4GOSFWC2T2NV3B2%2F20250508%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250508T000000Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=0ecf74f20211cc36788ccb19fbcb86d112186b8e3dd7f53ea01475e6c5272ec1" alt="Oorjahvan" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div class="absolute bottom-3 right-3">
+                <span class="card-badge bg-chart-1/80 text-white">Recent</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-semibold">Oorjahvan</h3>
+                <button class="text-muted-foreground hover:text-foreground">
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+              </div>
+              <div class="text-sm text-muted-foreground mb-4">Last modified: May 9, 2025</div>
+              <div class="flex justify-between items-center">
+                <div class="flex -space-x-2">
+                  <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white text-xs">SK</div>
+                  <div class="h-8 w-8 rounded-full bg-chart-2 flex items-center justify-center text-white text-xs">VR</div>
+                </div>
+                <button class="text-sm text-primary hover:underline">Open in Figma</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    
+    // You would connect to your backend here to fetch teams and projects
+    // For example:
+    /*
+    async function fetchProjects(teamId) {
+      try {
+        const response = await fetch(`/api/teams/${teamId}/projects`);
+        const data = await response.json();
+        // Render projects
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    }
+    
+    // Initial load of projects for Clustrex team
+    fetchProjects('372365418');
+    */
+  </script>
+</body>
+</html>

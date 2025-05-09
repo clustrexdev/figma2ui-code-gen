@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fig2UI - Providers</title>
+  <meta name="description" content="Connect your design-to-code workflow with various providers" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+        --color-clifford: #da373d;
+      --radius: 0.5rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.141 0.005 285.823);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.141 0.005 285.823);
+      --popover: oklch(1 0 0);
+      --popover-foreground: oklch(0.141 0.005 285.823);
+      --primary: oklch(0.606 0.25 292.717);
+      --primary-foreground: oklch(0.969 0.016 293.756);
+      --secondary: oklch(0.967 0.001 286.375);
+      --secondary-foreground: oklch(0.21 0.006 285.885);
+      --muted: oklch(0.967 0.001 286.375);
+      --muted-foreground: oklch(0.552 0.016 285.938);
+      --accent: oklch(0.967 0.001 286.375);
+      --accent-foreground: oklch(0.21 0.006 285.885);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.92 0.004 286.32);
+      --input: oklch(0.92 0.004 286.32);
+      --ring: oklch(0.606 0.25 292.717);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.141 0.005 285.823);
+      --sidebar-primary: oklch(0.606 0.25 292.717);
+      --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+      --sidebar-accent: oklch(0.967 0.001 286.375);
+      --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+      --sidebar-border: oklch(0.92 0.004 286.32);
+      --sidebar-ring: oklch(0.606 0.25 292.717);
+    }
+    .dark {
+      --background: oklch(0.141 0.005 285.823);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.21 0.006 285.885);
+      --card-foreground: oklch(0.985 0 0);
+      --popover: oklch(0.21 0.006 285.885);
+      --popover-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.541 0.281 293.009);
+      --primary-foreground: oklch(0.969 0.016 293.756);
+      --secondary: oklch(0.274 0.006 286.033);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.274 0.006 286.033);
+      --muted-foreground: oklch(0.705 0.015 286.067);
+      --accent: oklch(0.274 0.006 286.033);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.541 0.281 293.009);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+      --sidebar: oklch(0.21 0.006 285.885);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.541 0.281 293.009);
+      --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+      --sidebar-accent: oklch(0.274 0.006 286.033);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --sidebar-ring: oklch(0.541 0.281 293.009);
+    }
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: all 0.2s ease;
+    }
+    .sidebar-item:hover {
+      background-color: color-mix(in oklab, var(--sidebar-accent) 20%, transparent);
+    }
+    .sidebar-item.active {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-sidebar text-sidebar-foreground border-r border-slate-900/10 flex flex-col shrink-0 md:block hidden">
+      <a href="/client/index.html" class="p-4 flex items-center gap-2 border-b border-slate-900/10">
+        <img src="../../assets/logo.png" class="w-8 h-8 object-cover" />
+          <h1 class="text-lg font-bold">Fig2UI</h1>
+      </a>
+      
+      <nav class="p-2 flex-1">
+        <div class="mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">APPLICATIONS</div>
+        <a href="/client/pages/dashboard/overview.html" class="sidebar-item">
+          <i class="fa-solid fa-house w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/client/pages/dashboard/projects.html" class="sidebar-item">
+          <i class="fa-solid fa-folder w-5 h-5"></i>
+          <span>Projects</span>
+        </a>
+        <a href="/client/pages/dashboard/teams.html" class="sidebar-item ">
+          <i class="fa-solid fa-users w-5 h-5"></i>
+          <span>Teams</span>
+        </a>
+        <a href="/client/pages/dashboard/components.html" class="sidebar-item">
+          <i class="fa-solid fa-gear w-5 h-5"></i>
+          <span>Components</span>
+        </a>
+        
+        <div class="mt-6 mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">WORKSPACE</div>
+        <a href="/client/pages/dashboard/providers.html" class="sidebar-item active">
+          <i class="fa-solid fa-user-group w-5 h-5"></i>
+          <span>Providers</span>
+        </a>
+        <a href="/client/pages/dashboard/deployments.html" class="sidebar-item">
+          <i class="fa-solid fa-star w-5 h-5"></i>
+          <span>Deployments</span>
+        </a>
+        <a href="/client/pages/dashboard/notifications.html" class="sidebar-item">
+          <i class="fa-solid fa-clock-rotate-left w-5 h-5"></i>
+          <span>Notifications</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-slate-900/10">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">U</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">User Name</p>
+            <p class="text-xs text-muted-foreground truncate">user@example.com</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Main content -->
+    <div class="flex-1 flex flex-col">
+      <!-- Navbar -->
+      <header class="h-16 border-b border-slate-900/10 flex items-center justify-between px-6">
+        <div class="flex items-center gap-4">
+          <h2 class="text-lg font-semibold">Providers</h2>
+          <div class="text-sm text-gray-600">Connect your design-to-deployment workflow</div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-600"></i>
+            <input type="text" placeholder="Search providers..." class="pl-9 pr-4 py-2 rounded-md border border-slate-900/10 bg-white w-64 focus:outline-none focus:ring-2 focus:ring-purple-500">
+          </div>
+          
+          <button class="w-9 h-9 rounded-full flex items-center justify-center border border-slate-900/10 hover:bg-white/5">
+            <i class="fa-solid fa-bell"></i>
+          </button>
+        </div>
+      </header>
+      
+      <!-- Page content -->
+      <div class="flex-1 p-6 overflow-auto">
+        <div class="mb-8">
+          <h1 class="text-2xl font-bold mb-2">Connect Your Providers</h1>
+          <p class="text-gray-600">Set up integrations to streamline your design-to-code workflow</p>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="border-b border-slate-900/10 mb-6">
+          <div class="flex space-x-8">
+            <button class="px-1 py-2 border-b-2 border-purple-600 font-medium text-purple-500 ">All Providers</button>
+            <button class="px-1 py-2 text-gray-600 hover:text-white">Active</button>
+            <button class="px-1 py-2 text-gray-600 hover:text-white">Pending</button>
+          </div>
+        </div>
+
+        <!-- Design Category -->
+        <div class="mb-12">
+          <h2 class="text-lg font-semibold mb-4 text-purple-400 flex items-center gap-2">
+            <i class="fa-solid fa-palette"></i>
+            <span>Design Providers</span>
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Figma -->
+            <div class="bg-white border border-slate-900/10 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1">
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-[#1E1E2D] rounded-lg flex items-center justify-center">
+                    <i class="fa-brands fa-figma text-2xl text-[#F24E1E]"></i>
+                  </div>
+                  <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium">Connected</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Figma</h3>
+                <p class="text-gray-600 text-sm mb-6">Sync your Figma design files and extract components automatically.</p>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-xs">
+                      <i class="fa-solid fa-check"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">3 projects synced</span>
+                  </div>
+                  <button class="text-sm text-purple-500 hover:text-purple-400 font-medium">Manage</button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Sketch -->
+            <div class="bg-white border border-slate-900/10 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1">
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-[#1E1E2D] rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-diamond text-2xl text-[#F7B500]"></i>
+                  </div>
+                  <span class="px-2 py-1 bg-gray-500/20 text-gray-600 rounded-full text-xs font-medium">Not Connected</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Sketch</h3>
+                <p class="text-gray-600 text-sm mb-6">Import your Sketch files and convert them to production-ready code.</p>
+                <div class="flex justify-end">
+                  <button class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium">Connect</button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Adobe XD -->
+            <div class="bg-white border border-slate-900/10 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1">
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-[#1E1E2D] rounded-lg flex items-center justify-center">
+                    <i class="fa-brands fa-adobe text-2xl text-[#FF61F6]"></i>
+                  </div>
+                  <span class="px-2 py-1 bg-gray-500/20 text-gray-600 rounded-full text-xs font-medium">Not Connected</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Adobe XD</h3>
+                <p class="text-gray-600 text-sm mb-6">Import your Adobe XD designs and convert them to clean code.</p>
+                <div class="flex justify-end">
+                  <button class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium">Connect</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Code Repository Category -->
+        <div class="mb-12">
+          <h2 class="text-lg font-semibold mb-4 text-blue-400 flex items-center gap-2">
+            <i class="fa-solid fa-code-branch"></i>
+            <span>Repository Providers</span>
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- GitHub -->
+            <div class="bg-white border border-slate-900/10 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20 hover:-translate-y-1">
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-[#1E1E2D] rounded-lg flex items-center justify-center">
+                    <i class="fa-brands fa-github text-2xl text-white"></i>
+                  </div>
+                  <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium">Connected</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">GitHub</h3>
+                <p class="text-gray-600 text-sm mb-6">Push generated code directly to your GitHub repositories.</p>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-xs">
+                      <i class="fa-solid fa-check"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">5 repos linked</span>
+                  </div>
+                  <button class="text-sm text-blue-500 hover:text-blue-400 font-medium">Manage</button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- GitLab -->
+            <div class="bg-white border border-slate-900/10 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20 hover:-translate-y-1">
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-[#1E1E2D] rounded-lg flex items-center justify-center">
+                    <i class="fa-brands fa-gitlab text-2xl text-[#FC6D26]"></i>
+                  </div>
+                  <span class="px-2 py-1 bg-gray-500/20 text-gray-600 rounded-full text-xs font-medium">Not Connected</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">GitLab</h3>
+                <p class="text-gray-600 text-sm mb-6">Integrate with GitLab repositories for seamless code delivery.</p>
+                <div class="flex justify-end">
+                  <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">Connect</button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Bitbucket -->
+            <div class="bg-white border border-slate-900/10 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20 hover:-translate-y-1">
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-[#1E1E2D] rounded-lg flex items-center justify-center">
+                    <i class="fa-brands fa-bitbucket text-2xl text-[#0052CC]"></i>
+                  </div>
+                  <span class="px-2 py-1 bg-gray-500/20 text-gray-600 rounded-full text-xs font-medium">Not Connected</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Bitbucket</h3>
+                <p class="text-gray-600 text-sm mb-6">Connect your Bitbucket account for version control integration.</p>
+                <div class="flex justify-end">
+                  <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">Connect</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Deployment Category -->
+        <div class="mb-12">
+          <h2 class="text-lg font-semibold mb-4 text-green-400 flex items-center gap-2">
+            <i class="fa-solid fa-rocket"></i>
+            <span>Deployment Providers</span>
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Vercel -->
+            <div class="bg-white border border-slate-900/10 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20 hover:-translate-y-1">
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-[#1E1E2D] rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-triangle text-2xl text-white"></i>
+                  </div>
+                  <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium">Connected</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Vercel</h3>
+                <p class="text-gray-600 text-sm mb-6">Deploy your applications to Vercel with automatic previews.</p>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center text-xs">
+                      <i class="fa-solid fa-check"></i>
+                    </div>
+                    <span class="text-xs text-gray-600">2 projects deployed</span>
+                  </div>
+                  <button class="text-sm text-green-500 hover:text-green-400 font-medium">Manage</button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Netlify -->
+            <div class="bg-white border border-slate-900/10 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20 hover:-translate-y-1">
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-[#1E1E2D] rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-globe text-2xl text-[#00C7B7]"></i>
+                  </div>
+                  <span class="px-2 py-1 bg-gray-500/20 text-gray-600 rounded-full text-xs font-medium">Not Connected</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Netlify</h3>
+                <p class="text-gray-600 text-sm mb-6">Connect to Netlify for continuous deployment and hosting.</p>
+                <div class="flex justify-end">
+                  <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">Connect</button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- AWS -->
+            <div class="bg-white border border-slate-900/10 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20 hover:-translate-y-1">
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-[#1E1E2D] rounded-lg flex items-center justify-center">
+                    <i class="fa-brands fa-aws text-2xl text-[#FF9900]"></i>
+                  </div>
+                  <span class="px-2 py-1 bg-gray-500/20 text-gray-600 rounded-full text-xs font-medium">Not Connected</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">AWS Amplify</h3>
+                <p class="text-gray-600 text-sm mb-6">Deploy and host applications with AWS infrastructure.</p>
+                <div class="flex justify-end">
+                  <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">Connect</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CI/CD Category -->
+        <div class="mb-12">
+          <h2 class="text-lg font-semibold mb-4 text-orange-400 flex items-center gap-2">
+            <i class="fa-solid fa-gears"></i>
+            <span>CI/CD Providers</span>
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- GitHub Actions -->
+            <div class="bg-white border border-slate-900/10 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/20 hover:-translate-y-1">
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-[#1E1E2D] rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-code-commit text-2xl text-[#2088FF]"></i>
+                  </div>
+                  <span class="px-2 py-1 bg-gray-500/20 text-gray-600 rounded-full text-xs font-medium">Not Connected</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">GitHub Actions</h3>
+                <p class="text-gray-600 text-sm mb-6">Automate testing and deployment workflows with GitHub Actions.</p>
+                <div class="flex justify-end">
+                  <button class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium">Connect</button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- CircleCI -->
+            <div class="bg-white border border-slate-900/10 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/20 hover:-translate-y-1">
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-[#1E1E2D] rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-circle-notch text-2xl text-[#343434]"></i>
+                  </div>
+                  <span class="px-2 py-1 bg-gray-500/20 text-gray-600 rounded-full text-xs font-medium">Not Connected</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">CircleCI</h3>
+                <p class="text-gray-600 text-sm mb-6">Set up continuous integration pipelines for your projects.</p>
+                <div class="flex justify-end">
+                  <button class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium">Connect</button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Jenkins -->
+            <div class="bg-white border border-slate-900/10 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/20 hover:-translate-y-1">
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-[#1E1E2D] rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-server text-2xl text-[#D33833]"></i>
+                  </div>
+                  <span class="px-2 py-1 bg-gray-500/20 text-gray-600 rounded-full text-xs font-medium">Not Connected</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Jenkins</h3>
+                <p class="text-gray-600 text-sm mb-6">Configure Jenkins for your self-hosted CI/CD pipelines.</p>
+                <div class="flex justify-end">
+                  <button class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium">Connect</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add New Provider -->
+        <div class="flex justify-center mt-6">
+          <button class="px-6 py-3 border border-dashed border-slate-900/20 rounded-xl flex items-center gap-2 text-gray-600 hover:text-white hover:bg-white/5 transition-all duration-300">
+            <i class="fa-solid fa-plus"></i>
+            <span>Add Custom Provider</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // You would connect to your backend here to fetch and manage providers
+    // For example:
+    /*
+    async function fetchProviders() {
+      try {
+        const response = await fetch('/api/providers');
+        const data = await response.json();
+        // Render providers
+      } catch (error) {
+        console.error('Error fetching providers:', error);
+      }
+    }
+    
+    // Initial load of providers
+    fetchProviders();
+    */
+  </script>
+</body>
+</html>

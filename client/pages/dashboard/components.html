@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fig2UI - Components</title>
+  <meta name="description" content="Collection of components organized by teams and projects" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --radius: 0.5rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.141 0.005 285.823);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.141 0.005 285.823);
+      --popover: oklch(1 0 0);
+      --popover-foreground: oklch(0.141 0.005 285.823);
+      --primary: oklch(0.606 0.25 292.717);
+      --primary-foreground: oklch(0.969 0.016 293.756);
+      --secondary: oklch(0.967 0.001 286.375);
+      --secondary-foreground: oklch(0.21 0.006 285.885);
+      --muted: oklch(0.967 0.001 286.375);
+      --muted-foreground: oklch(0.552 0.016 285.938);
+      --accent: oklch(0.967 0.001 286.375);
+      --accent-foreground: oklch(0.21 0.006 285.885);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.92 0.004 286.32);
+      --input: oklch(0.92 0.004 286.32);
+      --ring: oklch(0.606 0.25 292.717);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.141 0.005 285.823);
+      --sidebar-primary: oklch(0.606 0.25 292.717);
+      --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+      --sidebar-accent: oklch(0.967 0.001 286.375);
+      --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+      --sidebar-border: oklch(0.92 0.004 286.32);
+      --sidebar-ring: oklch(0.606 0.25 292.717);
+    }
+
+    .dark {
+      --background: oklch(0.141 0.005 285.823);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.21 0.006 285.885);
+      --card-foreground: oklch(0.985 0 0);
+      --popover: oklch(0.21 0.006 285.885);
+      --popover-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.541 0.281 293.009);
+      --primary-foreground: oklch(0.969 0.016 293.756);
+      --secondary: oklch(0.274 0.006 286.033);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.274 0.006 286.033);
+      --muted-foreground: oklch(0.705 0.015 286.067);
+      --accent: oklch(0.274 0.006 286.033);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.541 0.281 293.009);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+      --sidebar: oklch(0.21 0.006 285.885);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.541 0.281 293.009);
+      --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+      --sidebar-accent: oklch(0.274 0.006 286.033);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --sidebar-ring: oklch(0.541 0.281 293.009);
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: all 0.2s ease;
+    }
+    .sidebar-item:hover {
+      background-color: color-mix(in oklab, var(--sidebar-accent) 20%, transparent);
+    }
+    .sidebar-item.active {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-foreground dark">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-sidebar text-sidebar-foreground border-r border-slate-900/10 flex flex-col">
+      <a href="/client/index.html" class="p-4 flex items-center gap-2 border-b border-slate-900/10">
+      <img src="../../assets/logo.png" class="w-8 h-8 object-cover" />
+        <h1 class="text-lg font-bold">Fig2UI</h1>
+    </a>
+
+      <nav class="p-2 flex-1">
+        <div class="mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">APPLICATIONS</div>
+        <a href="/client/pages/dashboard/overview.html" class="sidebar-item">
+          <i class="fa-solid fa-house w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/client/pages/dashboard/projects.html" class="sidebar-item">
+          <i class="fa-solid fa-folder w-5 h-5"></i>
+          <span>Projects</span>
+        </a>
+        <a href="/client/pages/dashboard/teams.html" class="sidebar-item">
+          <i class="fa-solid fa-users w-5 h-5"></i>
+          <span>Teams</span>
+        </a>
+        <a href="/client/pages/dashboard/components.html" class="sidebar-item active">
+          <i class="fa-solid fa-gear w-5 h-5"></i>
+          <span>Components</span>
+        </a>
+
+        <div class="mt-6 mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">WORKSPACE</div>
+        <a href="/client/pages/dashboard/providers.html" class="sidebar-item">
+          <i class="fa-solid fa-user-group w-5 h-5"></i>
+          <span>Providers</span>
+        </a>
+        <a href="/client/pages/dashboard/deployments.html" class="sidebar-item">
+          <i class="fa-solid fa-star w-5 h-5"></i>
+          <span>Deployments</span>
+        </a>
+        <a href="/client/pages/dashboard/notifications.html" class="sidebar-item">
+          <i class="fa-solid fa-clock-rotate-left w-5 h-5"></i>
+          <span>Notifications</span>
+        </a>
+      </nav>
+
+      <div class="p-4 border-t border-slate-900/10">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">U</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">User Name</p>
+            <p class="text-xs text-muted-foreground truncate">user@example.com</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex-1 flex flex-col">
+      <!-- Header -->
+      <header class="h-16 border-b border-slate-900/10 flex items-center justify-between px-6">
+        <div class="flex items-center gap-4">
+          <h2 class="text-lg font-semibold">Components</h2>
+          <div class="text-sm text-muted-foreground">Browse and manage your design components</div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></i>
+            <input type="text" class="pl-9 pr-4 py-2 rounded-md border border-input bg-background w-64 focus:outline-none focus:ring-2 focus:ring-ring" placeholder="Search components...">
+          </div>
+          
+          <button class="w-9 h-9 rounded-full flex items-center justify-center border border-input hover:bg-accent hover:text-accent-foreground">
+            <i class="fa-solid fa-bell"></i>
+          </button>
+        </div>
+      </header>
+      
+      <!-- Page content -->
+      <div class="flex-1 p-6 overflow-auto">
+        <div class="mb-6">
+          <h1 class="text-2xl font-bold mb-2">Design Components</h1>
+          <p class="text-muted-foreground">Browse, manage, and use components from your Figma files and teams</p>
+        </div>
+        
+        <div class="flex flex-col gap-8">
+          <!-- Clustrex Team Section -->
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-900/10">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-user-group"></i>
+                <span class="text-lg font-semibold">Clustrex Team</span>
+                <span class="px-2 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium">12 components</span>
+              </div>
+              <div class="flex gap-2">
+                <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-accent text-accent-foreground hover:bg-accent-foreground hover:text-accent transition-colors">
+                  <i class="fa-solid fa-filter"></i>
+                  Filter
+                </button>
+                <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
+                  <i class="fa-solid fa-plus"></i>
+                  Add Component
+                </button>
+              </div>
+            </div>
+            
+            <!-- Project: Emmanuel SDE's team library -->
+            <div class="mb-5">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-folder"></i>
+                  <span class="text-base font-medium">Emmanuel SDE's team library</span>
+                  <span class="px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground text-xs font-medium">Team Library</span>
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Component 1 -->
+                <div class="bg-card text-card-foreground border border-slate-900/10 rounded-lg overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5">
+                  <div class="aspect-video bg-accent relative overflow-hidden">
+                    <img src="/api/placeholder/400/225" alt="Button Component" class="w-full h-full object-cover transition-transform hover:scale-105">
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity flex justify-end">
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">UI</span>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                      <h3 class="font-semibold">Primary Button</h3>
+                      <button class="text-muted-foreground hover:text-foreground transition-colors">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3 line-clamp-2">Default button style with hover and active states</p>
+                    <div class="text-xs text-muted-foreground mb-3">Last updated: Apr 20, 2025</div>
+                    <div class="flex justify-between items-center">
+                      <div class="h-6 w-6 rounded-full bg-chart-1 flex items-center justify-center text-white text-xs font-medium">ES</div>
+                      <a href="#" class="text-sm text-primary hover:underline transition-colors">View in Figma</a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Component 2 -->
+                <div class="bg-card text-card-foreground border border-slate-900/10 rounded-lg overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5">
+                  <div class="aspect-video bg-accent relative overflow-hidden">
+                    <img src="/api/placeholder/400/225" alt="Input Component" class="w-full h-full object-cover transition-transform hover:scale-105">
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity flex justify-end">
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">Form</span>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                      <h3 class="font-semibold">Text Input</h3>
+                      <button class="text-muted-foreground hover:text-foreground transition-colors">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3 line-clamp-2">Form input field with validation states</p>
+                    <div class="text-xs text-muted-foreground mb-3">Last updated: Apr 15, 2025</div>
+                    <div class="flex justify-between items-center">
+                      <div class="h-6 w-6 rounded-full bg-chart-1 flex items-center justify-center text-white text-xs font-medium">ES</div>
+                      <a href="#" class="text-sm text-primary hover:underline transition-colors">View in Figma</a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Component 3 -->
+                <div class="bg-card text-card-foreground border border-slate-900/10 rounded-lg overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5">
+                  <div class="aspect-video bg-accent relative overflow-hidden">
+                    <img src="/api/placeholder/400/225" alt="Card Component" class="w-full h-full object-cover transition-transform hover:scale-105">
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity flex justify-end">
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">Layout</span>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                      <h3 class="font-semibold">Card Container</h3>
+                      <button class="text-muted-foreground hover:text-foreground transition-colors">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3 line-clamp-2">Flexible card container for content display</p>
+                    <div class="text-xs text-muted-foreground mb-3">Last updated: Apr 18, 2025</div>
+                    <div class="flex justify-between items-center">
+                      <div class="h-6 w-6 rounded-full bg-chart-2 flex items-center justify-center text-white text-xs font-medium">JD</div>
+                      <a href="#" class="text-sm text-primary hover:underline transition-colors">View in Figma</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Design Systems Team Section -->
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-900/10">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-paint-brush"></i>
+                <span class="text-lg font-semibold">Design Systems Team</span>
+                <span class="px-2 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium">8 components</span>
+              </div>
+              <div class="flex gap-2">
+                <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-accent text-accent-foreground hover:bg-accent-foreground hover:text-accent transition-colors">
+                  <i class="fa-solid fa-filter"></i>
+                  Filter
+                </button>
+                <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
+                  <i class="fa-solid fa-plus"></i>
+                  Add Component
+                </button>
+              </div>
+            </div>
+
+            <!-- Project: Core Design System -->
+            <div class="mb-5">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-folder"></i>
+                  <span class="text-base font-medium">Core Design System</span>
+                  <span class="px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground text-xs font-medium">System</span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Component 1 -->
+                <div class="bg-card text-card-foreground border border-slate-900/10 rounded-lg overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5">
+                  <div class="aspect-video bg-accent relative overflow-hidden">
+                    <img src="/api/placeholder/400/225" alt="Color System" class="w-full h-full object-cover transition-transform hover:scale-105">
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity flex justify-end gap-2">
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">Foundation</span>
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">Colors</span>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                      <h3 class="font-semibold">Color System</h3>
+                      <button class="text-muted-foreground hover:text-foreground transition-colors">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3 line-clamp-2">Complete color palette with dark/light mode variants</p>
+                    <div class="text-xs text-muted-foreground mb-3">Last updated: May 2, 2025</div>
+                    <div class="flex justify-between items-center">
+                      <div class="h-6 w-6 rounded-full bg-chart-1 flex items-center justify-center text-white text-xs font-medium">LP</div>
+                      <a href="#" class="text-sm text-primary hover:underline transition-colors">View in Figma</a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Component 2 -->
+                <div class="bg-card text-card-foreground border border-slate-900/10 rounded-lg overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5">
+                  <div class="aspect-video bg-accent relative overflow-hidden">
+                    <img src="/api/placeholder/400/225" alt="Typography System" class="w-full h-full object-cover transition-transform hover:scale-105">
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity flex justify-end gap-2">
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">Foundation</span>
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">Typography</span>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                      <h3 class="font-semibold">Typography System</h3>
+                      <button class="text-muted-foreground hover:text-foreground transition-colors">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3 line-clamp-2">Font families, sizes, weights and line heights</p>
+                    <div class="text-xs text-muted-foreground mb-3">Last updated: May 3, 2025</div>
+                    <div class="flex justify-between items-center">
+                      <div class="h-6 w-6 rounded-full bg-chart-2 flex items-center justify-center text-white text-xs font-medium">AR</div>
+                      <a href="#" class="text-sm text-primary hover:underline transition-colors">View in Figma</a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Component 3 -->
+                <div class="bg-card text-card-foreground border border-slate-900/10 rounded-lg overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5">
+                  <div class="aspect-video bg-accent relative overflow-hidden">
+                    <img src="/api/placeholder/400/225" alt="Icon Library" class="w-full h-full object-cover transition-transform hover:scale-105">
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity flex justify-end gap-2">
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">Assets</span>
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">Icons</span>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                      <h3 class="font-semibold">Icon Library</h3>
+                      <button class="text-muted-foreground hover:text-foreground transition-colors">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3 line-clamp-2">Comprehensive icon set with multiple sizes and styles</p>
+                    <div class="text-xs text-muted-foreground mb-3">Last updated: May 6, 2025</div>
+                    <div class="flex justify-between items-center">
+                      <div class="h-6 w-6 rounded-full bg-chart-3 flex items-center justify-center text-white text-xs font-medium">MT</div>
+                      <a href="#" class="text-sm text-primary hover:underline transition-colors">View in Figma</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Personal Components Section -->
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-900/10">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-user"></i>
+                <span class="text-lg font-semibold">Personal Components</span>
+                <span class="px-2 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium">3 components</span>
+              </div>
+              <div class="flex gap-2">
+                <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
+                  <i class="fa-solid fa-plus"></i>
+                  Add Component
+                </button>
+              </div>
+            </div>
+
+            <!-- Empty State for Drafts -->
+            <div class="bg-card text-card-foreground border border-dashed border-slate-900/10 rounded-lg p-6 text-center mb-6">
+              <div class="text-2xl text-muted-foreground mb-3">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </div>
+              <h3 class="text-base font-medium mb-2">No Draft Components</h3>
+              <p class="text-sm text-muted-foreground mb-4">You don't have any draft components yet. Create one to get started.</p>
+              <button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
+                <i class="fa-solid fa-plus"></i>
+                Create Draft Component
+              </button>
+            </div>
+
+            <!-- Project: Personal Experiments -->
+            <div class="mb-5">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-flask"></i>
+                  <span class="text-base font-medium">Personal Experiments</span>
+                  <span class="px-2 py-0.5 rounded-full bg-chart-5 text-white text-xs font-medium">Experimental</span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Component 1 -->
+                <div class="bg-card text-card-foreground border border-slate-900/10 rounded-lg overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5">
+                  <div class="aspect-video bg-accent relative overflow-hidden">
+                    <img src="/api/placeholder/400/225" alt="Dark Mode Switch" class="w-full h-full object-cover transition-transform hover:scale-105">
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity flex justify-end gap-2">
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">UI</span>
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">Toggle</span>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                      <h3 class="font-semibold">Dark Mode Switch</h3>
+                      <button class="text-muted-foreground hover:text-foreground transition-colors">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3 line-clamp-2">Animated dark/light mode toggle switch</p>
+                    <div class="text-xs text-muted-foreground mb-3">Last updated: May 8, 2025</div>
+                    <div class="flex justify-between items-center">
+                      <div class="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-white text-xs font-medium">U</div>
+                      <a href="#" class="text-sm text-primary hover:underline transition-colors">View in Figma</a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Component 2 -->
+                <div class="bg-card text-card-foreground border border-slate-900/10 rounded-lg overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5">
+                  <div class="aspect-video bg-accent relative overflow-hidden">
+                    <img src="/api/placeholder/400/225" alt="3D Button" class="w-full h-full object-cover transition-transform hover:scale-105">
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity flex justify-end gap-2">
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">3D</span>
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">Button</span>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                      <h3 class="font-semibold">3D Button Effect</h3>
+                      <button class="text-muted-foreground hover:text-foreground transition-colors">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3 line-clamp-2">Experimental 3D button with depth effect</p>
+                    <div class="text-xs text-muted-foreground mb-3">Last updated: Apr 30, 2025</div>
+                    <div class="flex justify-between items-center">
+                      <div class="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-white text-xs font-medium">U</div>
+                      <a href="#" class="text-sm text-primary hover:underline transition-colors">View in Figma</a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Component 3 -->
+                <div class="bg-card text-card-foreground border border-slate-900/10 rounded-lg overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5">
+                  <div class="aspect-video bg-accent relative overflow-hidden">
+                    <img src="/api/placeholder/400/225" alt="Glass Morphism" class="w-full h-full object-cover transition-transform hover:scale-105">
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity flex justify-end gap-2">
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">Effect</span>
+                      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-accent text-accent-foreground">UI</span>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                      <h3 class="font-semibold">Glass Morphism Card</h3>
+                      <button class="text-muted-foreground hover:text-foreground transition-colors">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                      </button>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3 line-clamp-2">Modern glass effect card with background blur</p>
+                    <div class="text-xs text-muted-foreground mb-3">Last updated: May 1, 2025</div>
+                    <div class="flex justify-between items-center">
+                      <div class="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-white text-xs font-medium">U</div>
+                      <a href="#" class="text-sm text-primary hover:underline transition-colors">View in Figma</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Toggle dropdown menus
+      const dropdownButtons = document.querySelectorAll('button:has(.fa-ellipsis-vertical)');
+      dropdownButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.stopPropagation();
+          
+          // Create dropdown menu if it doesn't exist
+          let dropdownMenu = this.parentElement.querySelector('.dropdown-menu');
+          if (!dropdownMenu) {
+            dropdownMenu = document.createElement('div');
+            dropdownMenu.className = 'absolute right-0 top-full mt-1 min-w-[200px] bg-popover border border-slate-900/10 rounded-md shadow-lg z-50 hidden';
+            dropdownMenu.innerHTML = `
+              <div class="p-1">
+                <button class="w-full px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors">Edit Component</button>
+                <button class="w-full px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors">Duplicate</button>
+                <button class="w-full px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors">Export</button>
+                <button class="w-full px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors">Add to Project</button>
+                <button class="w-full px-3 py-2 text-sm text-left text-destructive hover:bg-destructive/10 rounded-sm transition-colors">Delete</button>
+              </div>
+            `;
+            this.parentElement.appendChild(dropdownMenu);
+          }
+          
+          // Toggle visibility
+          dropdownMenu.classList.toggle('hidden');
+        });
+      });
+      
+      // Close dropdowns when clicking elsewhere
+      document.addEventListener('click', function() {
+        const dropdownMenus = document.querySelectorAll('.dropdown-menu:not(.hidden)');
+        dropdownMenus.forEach(menu => {
+          menu.classList.add('hidden');
+        });
+      });
+      
+      // Search functionality
+      const searchInput = document.querySelector('input[type="text"]');
+      searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const componentCards = document.querySelectorAll('.bg-card');
+        
+        componentCards.forEach(card => {
+          const title = card.querySelector('h3').textContent.toLowerCase();
+          const description = card.querySelector('p').textContent.toLowerCase();
+          const tags = Array.from(card.querySelectorAll('.inline-flex')).map(tag => tag.textContent.toLowerCase());
+          
+          const isMatch = title.includes(searchTerm) || 
+                          description.includes(searchTerm) ||
+                          tags.some(tag => tag.includes(searchTerm));
+          
+          card.closest('.grid').style.display = isMatch ? '' : 'none';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

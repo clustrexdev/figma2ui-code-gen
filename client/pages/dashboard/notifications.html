@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fig2UI - Notifications</title>
+  <meta name="description" content="Collection of notifications for your projects and deployments" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --radius: 0.5rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.141 0.005 285.823);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.141 0.005 285.823);
+      --popover: oklch(1 0 0);
+      --popover-foreground: oklch(0.141 0.005 285.823);
+      --primary: oklch(0.606 0.25 292.717);
+      --primary-foreground: oklch(0.969 0.016 293.756);
+      --secondary: oklch(0.967 0.001 286.375);
+      --secondary-foreground: oklch(0.21 0.006 285.885);
+      --muted: oklch(0.967 0.001 286.375);
+      --muted-foreground: oklch(0.552 0.016 285.938);
+      --accent: oklch(0.967 0.001 286.375);
+      --accent-foreground: oklch(0.21 0.006 285.885);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.92 0.004 286.32);
+      --input: oklch(0.92 0.004 286.32);
+      --ring: oklch(0.606 0.25 292.717);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.141 0.005 285.823);
+      --sidebar-primary: oklch(0.606 0.25 292.717);
+      --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+      --sidebar-accent: oklch(0.967 0.001 286.375);
+      --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+      --sidebar-border: oklch(0.92 0.004 286.32);
+      --sidebar-ring: oklch(0.606 0.25 292.717);
+    }
+
+    .dark {
+      --background: oklch(0.141 0.005 285.823);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.21 0.006 285.885);
+      --card-foreground: oklch(0.985 0 0);
+      --popover: oklch(0.21 0.006 285.885);
+      --popover-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.541 0.281 293.009);
+      --primary-foreground: oklch(0.969 0.016 293.756);
+      --secondary: oklch(0.274 0.006 286.033);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.274 0.006 286.033);
+      --muted-foreground: oklch(0.705 0.015 286.067);
+      --accent: oklch(0.274 0.006 286.033);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.541 0.281 293.009);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+      --sidebar: oklch(0.21 0.006 285.885);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.541 0.281 293.009);
+      --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+      --sidebar-accent: oklch(0.274 0.006 286.033);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --sidebar-ring: oklch(0.541 0.281 293.009);
+    }
+    /* Sidebar item hover and active states */
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+      color: var(--sidebar-foreground);
+      text-decoration: none;
+    }
+    .sidebar-item:hover {
+      background-color: rgba(var(--tw-color-sidebar-accent), 0.2);
+      color: var(--sidebar-accent-foreground);
+    }
+    .sidebar-item.active {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      font-weight: 400;
+    }
+
+    /* Scrollbar styling */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: rgba(100, 100, 100, 0.3);
+      border-radius: 20px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(100, 100, 100, 0.5);
+    }
+
+    /* Notification badge animations */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    .pulse-animation {
+      animation: pulse 2s infinite;
+    }
+    
+    /* Smooth transitions */
+    .transition-all {
+      transition-property: all;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 150ms;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+  <div class="flex min-h-screen">
+    <!-- Sidebar - Kept intact as per instructions -->
+    <aside class="w-64 bg-sidebar text-sidebar-foreground border-r border-slate-900/10 flex flex-col">
+        <a href="/client/index.html" class="p-4 flex items-center gap-2 border-b border-slate-900/10">
+            <img src="../../assets/logo.png" class="w-8 h-8 object-cover" />
+              <h1 class="text-lg font-bold">Fig2UI</h1>
+          </a>
+
+      <nav class="p-2 flex-1">
+        <div class="mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">APPLICATIONS</div>
+        <a href="/client/pages/dashboard/overview.html" class="sidebar-item">
+          <i class="fa-solid fa-house w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/client/pages/dashboard/projects.html" class="sidebar-item">
+          <i class="fa-solid fa-folder w-5 h-5"></i>
+          <span>Projects</span>
+        </a>
+        <a href="/client/pages/dashboard/teams.html" class="sidebar-item">
+          <i class="fa-solid fa-users w-5 h-5"></i>
+          <span>Teams</span>
+        </a>
+        <a href="/client/pages/dashboard/components.html" class="sidebar-item">
+          <i class="fa-solid fa-gear w-5 h-5"></i>
+          <span>Components</span>
+        </a>
+
+        <div class="mt-6 mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">WORKSPACE</div>
+        <a href="/client/pages/dashboard/providers.html" class="sidebar-item">
+          <i class="fa-solid fa-user-group w-5 h-5"></i>
+          <span>Providers</span>
+        </a>
+        <a href="/client/pages/dashboard/deployments.html" class="sidebar-item">
+          <i class="fa-solid fa-star w-5 h-5"></i>
+          <span>Deployments</span>
+        </a>
+        <a href="/client/pages/dashboard/notifications.html" class="sidebar-item active">
+          <i class="fa-solid fa-clock-rotate-left w-5 h-5"></i>
+          <span>Notifications</span>
+        </a>
+      </nav>
+
+      <div class="p-4 border-t border-slate-900/10">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">U</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">User Name</p>
+            <p class="text-xs text-muted-foreground truncate">user@example.com</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content - Enhanced with modern design -->
+    <div class="flex-1 flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <!-- Top Navigation Bar -->
+      <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm">
+        <div class="flex items-center justify-between px-6 py-4">
+          <div class="flex items-center space-x-4">
+            <h1 class="text-2xl font-bold">Notifications</h1>
+            <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+              7 New
+            </span>
+          </div>
+          
+          <div class="flex items-center space-x-4">
+            <div class="relative">
+              <button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                <i class="fa-solid fa-search text-slate-500 dark:text-slate-400"></i>
+              </button>
+            </div>
+            <div class="relative">
+              <button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                <i class="fa-solid fa-bell text-slate-500 dark:text-slate-400"></i>
+                <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500 pulse-animation"></span>
+              </button>
+            </div>
+            <div class="relative">
+              <button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                <i class="fa-solid fa-gear text-slate-500 dark:text-slate-400"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Filter tabs -->
+        <div class="px-6 pb-3 flex items-center space-x-1 text-sm">
+          <button class="px-4 py-2 rounded-lg bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 font-medium">
+            All
+          </button>
+          <button class="px-4 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+            Unread
+          </button>
+          <button class="px-4 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+            Important
+          </button>
+        </div>
+      </header>
+
+      <!-- Main content area -->
+      <main class="flex-1 p-6 overflow-auto custom-scrollbar">
+        <div class="max-w-4xl mx-auto">
+          <!-- Date header -->
+          <div class="flex items-center mb-6">
+            <div class="flex-grow h-px bg-slate-200 dark:bg-slate-700"></div>
+            <span class="px-4 text-sm font-medium text-slate-500 dark:text-slate-400">Today · May 9, 2025</span>
+            <div class="flex-grow h-px bg-slate-200 dark:bg-slate-700"></div>
+          </div>
+
+          <!-- Notifications container -->
+          <div class="space-y-4" id="notificationsContainer" aria-live="polite" aria-relevant="additions">
+            <!-- Notifications will be dynamically inserted here -->
+          </div>
+          
+          <!-- Date header -->
+          <div class="flex items-center my-6">
+            <div class="flex-grow h-px bg-slate-200 dark:bg-slate-700"></div>
+            <span class="px-4 text-sm font-medium text-slate-500 dark:text-slate-400">Yesterday · May 8, 2025</span>
+            <div class="flex-grow h-px bg-slate-200 dark:bg-slate-700"></div>
+          </div>
+          
+          <!-- Additional notifications from yesterday will be added here -->
+          <div class="space-y-4" id="yesterdayNotificationsContainer">
+            <!-- Yesterday's notifications will be inserted here -->
+          </div>
+          
+          <!-- Date header -->
+          <div class="flex items-center my-6">
+            <div class="flex-grow h-px bg-slate-200 dark:bg-slate-700"></div>
+            <span class="px-4 text-sm font-medium text-slate-500 dark:text-slate-400">Earlier · May 7, 2025</span>
+            <div class="flex-grow h-px bg-slate-200 dark:bg-slate-700"></div>
+          </div>
+          
+          <!-- Additional notifications from earlier will be added here -->
+          <div class="space-y-4" id="earlierNotificationsContainer">
+            <!-- Earlier notifications will be inserted here -->
+          </div>
+          
+          <!-- Load more button -->
+          <div class="mt-8 text-center">
+            <button class="px-6 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors font-medium">
+              Load More
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Sample notifications data for the app context (May 9, 2025)
+    const notifications = [
+      {
+        id: 1,
+        type: "success",
+        title: "Deployment Successful",
+        message: "Project 'Emmanuel SDE's team library' was successfully deployed to Production.",
+        timestamp: "May 9, 2025, 1:15 PM IST",
+        date: "May 9, 2025"
+      },
+      {
+        id: 2,
+        type: "warning",
+        title: "Deployment Pending",
+        message: "Deployment for 'Multi Agent Design' is pending approval on Staging environment.",
+        timestamp: "May 9, 2025, 12:45 PM IST",
+        date: "May 9, 2025"
+      },
+      {
+        id: 3,
+        type: "error",
+        title: "Deployment Failed",
+        message: "Deployment of 'Oorjahvan' to Production failed due to a configuration error. Rollback initiated.",
+        timestamp: "May 8, 2025, 5:30 PM IST",
+        date: "May 8, 2025"
+      },
+      {
+        id: 4,
+        type: "info",
+        title: "New Component Added",
+        message: "A new UI component 'User Profile Card' was added to the 'Components' library by User Name.",
+        timestamp: "May 8, 2025, 3:20 PM IST",
+        date: "May 8, 2025"
+      },
+      {
+        id: 5,
+        type: "success",
+        title: "Notification Settings Updated",
+        message: "Your notification preferences have been saved successfully.",
+        timestamp: "May 7, 2025, 10:05 AM IST",
+        date: "May 7, 2025"
+      },
+      {
+        id: 6,
+        type: "warning",
+        title: "Provider Connection Lost",
+        message: "Connection to 'AWS Cloud Provider' was lost. Some deployments may be delayed.",
+        timestamp: "May 7, 2025, 9:45 AM IST",
+        date: "May 7, 2025"
+      },
+      {
+        id: 7,
+        type: "info",
+        title: "Team Invitation",
+        message: "You have been invited to join the 'Frontend Developers' team.",
+        timestamp: "May 6, 2025, 4:00 PM IST",
+        date: "May 6, 2025"
+      }
+    ];
+
+    const iconMap = {
+      info: "fa-circle-info",
+      success: "fa-circle-check",
+      warning: "fa-triangle-exclamation",
+      error: "fa-circle-xmark"
+    };
+
+    const bgColorMap = {
+      info: "bg-blue-100 dark:bg-blue-900/30",
+      success: "bg-green-100 dark:bg-green-900/30",
+      warning: "bg-amber-100 dark:bg-amber-900/30",
+      error: "bg-red-100 dark:bg-red-900/30"
+    };
+
+    const textColorMap = {
+      info: "text-blue-600 dark:text-blue-400",
+      success: "text-green-600 dark:text-green-400",
+      warning: "text-amber-600 dark:text-amber-400",
+      error: "text-red-600 dark:text-red-400"
+    };
+
+    const borderColorMap = {
+      info: "border-blue-200 dark:border-blue-800",
+      success: "border-green-200 dark:border-green-800",
+      warning: "border-amber-200 dark:border-amber-800",
+      error: "border-red-200 dark:border-red-800"
+    };
+
+    function createNotificationCard(notification) {
+      const card = document.createElement("div");
+      card.className = `group flex items-start gap-4 p-4 rounded-xl bg-white dark:bg-slate-800 border ${borderColorMap[notification.type]} shadow-sm hover:shadow-md transition-all cursor-pointer`;
+      card.setAttribute("role", "alert");
+      card.setAttribute("tabindex", "0");
+
+      const iconBg = bgColorMap[notification.type];
+      const iconColor = textColorMap[notification.type];
+      const iconName = iconMap[notification.type];
+
+      card.innerHTML = `
+        <div class="flex-shrink-0 w-10 h-10 ${iconBg} ${iconColor} rounded-full flex items-center justify-center">
+          <i class="fa-solid ${iconName}" aria-hidden="true"></i>
+        </div>
+        <div class="flex-1">
+          <div class="flex justify-between items-start">
+            <h3 class="font-semibold text-slate-900 dark:text-slate-100">${notification.title}</h3>
+            <div class="flex items-center">
+              <time class="text-xs text-slate-500 dark:text-slate-400">${notification.timestamp.split(', ')[1]}</time>
+              <div class="ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 p-1">
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">${notification.message}</p>
+          <div class="mt-2 flex items-center gap-2">
+            <span class="text-xs font-medium ${textColorMap[notification.type]} px-2 py-0.5 rounded-full ${bgColorMap[notification.type]} capitalize">
+              ${notification.type}
+            </span>
+            <button class="text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+              <i class="fa-solid fa-check mr-1"></i> Mark as read
+            </button>
+          </div>
+        </div>
+      `;
+      
+      return card;
+    }
+
+    function sortNotificationsByDate(notifications) {
+      const todayNotifications = notifications.filter(n => n.date === "May 9, 2025");
+      const yesterdayNotifications = notifications.filter(n => n.date === "May 8, 2025");
+      const earlierNotifications = notifications.filter(n => n.date !== "May 9, 2025" && n.date !== "May 8, 2025");
+      
+      return {
+        today: todayNotifications,
+        yesterday: yesterdayNotifications,
+        earlier: earlierNotifications
+      };
+    }
+
+    function renderNotifications() {
+      const sortedNotifications = sortNotificationsByDate(notifications);
+      
+      const todayContainer = document.getElementById("notificationsContainer");
+      const yesterdayContainer = document.getElementById("yesterdayNotificationsContainer");
+      const earlierContainer = document.getElementById("earlierNotificationsContainer");
+      
+      // Clear containers
+      todayContainer.innerHTML = "";
+      yesterdayContainer.innerHTML = "";
+      earlierContainer.innerHTML = "";
+      
+      // Render today's notifications
+      if (sortedNotifications.today.length === 0) {
+        todayContainer.innerHTML = `<p class="text-center py-4 text-slate-500 dark:text-slate-400">No notifications for today.</p>`;
+      } else {
+        sortedNotifications.today.forEach(n => {
+          todayContainer.appendChild(createNotificationCard(n));
+        });
+      }
+      
+      // Render yesterday's notifications
+      if (sortedNotifications.yesterday.length === 0) {
+        yesterdayContainer.innerHTML = `<p class="text-center py-4 text-slate-500 dark:text-slate-400">No notifications for yesterday.</p>`;
+      } else {
+        sortedNotifications.yesterday.forEach(n => {
+          yesterdayContainer.appendChild(createNotificationCard(n));
+        });
+      }
+      
+      // Render earlier notifications
+      if (sortedNotifications.earlier.length === 0) {
+        earlierContainer.innerHTML = `<p class="text-center py-4 text-slate-500 dark:text-slate-400">No earlier notifications.</p>`;
+      } else {
+        sortedNotifications.earlier.forEach(n => {
+          earlierContainer.appendChild(createNotificationCard(n));
+        });
+      }
+      
+      // Add a small delay before animation to ensure DOM is ready
+      setTimeout(animateNotifications, 100);
+    }
+
+    function animateNotifications() {
+      const cards = document.querySelectorAll("[role='alert']");
+      gsap.from(cards, {
+        duration: 0.5,
+        y: 15,
+        opacity: 0,
+        stagger: 0.08,
+        ease: "power3.out",
+      });
+    }
+
+    // Initialize the UI
+    renderNotifications();
+  </script>
+</body>
+</html>

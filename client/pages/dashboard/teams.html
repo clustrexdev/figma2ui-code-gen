@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fig2UI - Teams</title>
+  <meta name="description" content="Manage your Figma teams and associated projects" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+  --radius: 0.5rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: oklch(0.606 0.25 292.717);
+  --primary-foreground: oklch(0.969 0.016 293.756);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.004 286.32);
+  --input: oklch(0.92 0.004 286.32);
+  --ring: oklch(0.606 0.25 292.717);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-primary: oklch(0.606 0.25 292.717);
+  --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-ring: oklch(0.606 0.25 292.717);
+}
+
+.dark {
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.21 0.006 285.885);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.541 0.281 293.009);
+  --primary-foreground: oklch(0.969 0.016 293.756);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.274 0.006 286.033);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.274 0.006 286.033);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.541 0.281 293.009);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.541 0.281 293.009);
+  --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.541 0.281 293.009);
+}
+
+/* Custom classes converted from Tailwind */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+.sidebar-item:hover {
+  background-color: color-mix(in oklab, var(--sidebar-accent) 20%, transparent);
+}
+.sidebar-item.active {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.team-card {
+  background-color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.team-card:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transform: scale(1.01);
+}
+
+.card-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: color-mix(in oklab, var(--foreground) 80%, transparent);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.modal-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-container {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 100%;
+  max-width: 28rem;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--foreground);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+.modal-container.show {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* Steps */
+.step {
+  position: relative;
+  padding-left: 2rem;
+  padding-bottom: 2rem;
+  border-left: 1px solid var(--muted);
+}
+.step:last-child {
+  border-left: none;
+  padding-bottom: 0;
+}
+.step-number {
+  position: absolute;
+  left: -0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Project pill */
+.project-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.125rem 0.625rem;
+  margin-right: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+  </style>
+</head>
+<body class="bg-slate-50 text-foreground dark">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-sidebar text-sidebar-foreground border-r border-slate-900/10 flex flex-col shrink-0 md:block hidden">
+      <a href="/client/index.html" class="p-4 flex items-center gap-2 border-b border-slate-900/10">
+        <img src="../../assets/logo.png" class="w-8 h-8 object-cover" />
+          <h1 class="text-lg font-bold">Fig2UI</h1>
+      </a>
+      
+      <nav class="p-2 flex-1">
+        <div class="mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">APPLICATIONS</div>
+        <a href="/client/pages/dashboard/overview.html" class="sidebar-item">
+          <i class="fa-solid fa-house w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/client/pages/dashboard/projects.html" class="sidebar-item">
+          <i class="fa-solid fa-folder w-5 h-5"></i>
+          <span>Projects</span>
+        </a>
+        <a href="/client/pages/dashboard/teams.html" class="sidebar-item active">
+          <i class="fa-solid fa-users w-5 h-5"></i>
+          <span>Teams</span>
+        </a>
+        <a href="/client/pages/dashboard/components.html" class="sidebar-item">
+          <i class="fa-solid fa-gear w-5 h-5"></i>
+          <span>Components</span>
+        </a>
+        
+        <div class="mt-6 mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">WORKSPACE</div>
+        <a href="/client/pages/dashboard/providers.html" class="sidebar-item">
+          <i class="fa-solid fa-user-group w-5 h-5"></i>
+          <span>Providers</span>
+        </a>
+        <a href="/client/pages/dashboard/deployments.html" class="sidebar-item">
+          <i class="fa-solid fa-star w-5 h-5"></i>
+          <span>Deployments</span>
+        </a>
+        <a href="/client/pages/dashboard/notifications.html" class="sidebar-item">
+          <i class="fa-solid fa-clock-rotate-left w-5 h-5"></i>
+          <span>Notifications</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-slate-900/10">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">U</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">User Name</p>
+            <p class="text-xs text-muted-foreground truncate">user@example.com</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Mobile sidebar toggle -->
+    <div class="md:hidden fixed bottom-4 right-4 z-50">
+      <button id="mobile-menu-toggle" class="h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+    
+    <!-- Mobile sidebar -->
+    <div id="mobile-sidebar" class="fixed inset-0 bg-sidebar z-40 transform -translate-x-full transition-transform duration-300 md:hidden">
+      <div class="p-4 flex items-center justify-between border-b border-slate-900/10">
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold">F2U</div>
+          <h1 class="text-lg font-bold">Fig2UI</h1>
+        </div>
+        <button id="close-mobile-menu" class="h-8 w-8 rounded-md hover:bg-sidebar-accent/20 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      
+      <nav class="p-2">
+        <div class="mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">APPLICATIONS</div>
+        <a href="/client/pages/dashboard/overview.html" class="sidebar-item">
+          <i class="fa-solid fa-house w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/client/pages/dashboard/projects.html" class="sidebar-item">
+          <i class="fa-solid fa-folder w-5 h-5"></i>
+          <span>Projects</span>
+        </a>
+        <a href="/client/pages/dashboard/teams.html" class="sidebar-item active">
+          <i class="fa-solid fa-users w-5 h-5"></i>
+          <span>Teams</span>
+        </a>
+        <a href="/client/pages/dashboard/components.html" class="sidebar-item">
+          <i class="fa-solid fa-gear w-5 h-5"></i>
+          <span>Components</span>
+        </a>
+        
+        <div class="mt-6 mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">WORKSPACE</div>
+        <a href="/client/pages/dashboard/providers.html" class="sidebar-item">
+          <i class="fa-solid fa-user-group w-5 h-5"></i>
+          <span>Providers</span>
+        </a>
+        <a href="/client/pages/dashboard/deployments.html" class="sidebar-item">
+          <i class="fa-solid fa-star w-5 h-5"></i>
+          <span>Deployments</span>
+        </a>
+        <a href="/client/pages/dashboard/notifications.html" class="sidebar-item">
+          <i class="fa-solid fa-clock-rotate-left w-5 h-5"></i>
+          <span>Notifications</span>
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Main content -->
+    <div class="flex-1 flex flex-col">
+      <!-- Navbar -->
+      <header class="h-16 border-b border-slate-900/10 flex items-center justify-between px-6">
+        <div class="flex items-center gap-4">
+          <h2 class="text-lg font-semibold">Teams</h2>
+          <div class="text-sm text-muted-foreground md:block hidden">Manage your Figma teams</div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <div class="relative md:block hidden">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></i>
+            <input type="text" placeholder="Search teams..." class="pl-9 pr-4 py-2 rounded-md border border-input bg-background w-64 focus:outline-none focus:ring-2 focus:ring-ring">
+          </div>
+          
+          <button id="open-add-team-modal" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90">
+            <i class="fa-solid fa-plus mr-2"></i>
+            <span class="md:inline hidden">Add Team</span>
+            <span class="md:hidden inline">Add</span>
+          </button>
+          
+          <button class="w-9 h-9 rounded-full flex items-center justify-center border border-input hover:bg-accent hover:text-accent-foreground md:flex hidden">
+            <i class="fa-solid fa-bell"></i>
+          </button>
+        </div>
+      </header>
+      
+      <!-- Page content -->
+      <div class="flex-1 p-4 md:p-6 overflow-auto">
+        <div class="mb-6">
+          <h1 class="text-2xl font-bold mb-2">Teams</h1>
+          <p class="text-muted-foreground">Connect and manage your Figma teams</p>
+        </div>
+        
+        <!-- Team Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div class="bg-card border border-slate-900/10 rounded-lg p-4">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-sm font-medium text-muted-foreground">Total Teams</h3>
+              <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <i class="fa-solid fa-users"></i>
+              </div>
+            </div>
+            <p class="text-2xl font-bold">1</p>
+            <p class="text-xs text-muted-foreground mt-2">1 active team</p>
+          </div>
+          
+          <div class="bg-card border border-slate-900/10 rounded-lg p-4">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-sm font-medium text-muted-foreground">Total Projects</h3>
+              <div class="h-8 w-8 rounded-full bg-chart-1/10 flex items-center justify-center text-chart-1">
+                <i class="fa-solid fa-folder"></i>
+              </div>
+            </div>
+            <p class="text-2xl font-bold">3</p>
+            <p class="text-xs text-muted-foreground mt-2">Across all teams</p>
+          </div>
+          
+          <div class="bg-card border border-slate-900/10 rounded-lg p-4">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-sm font-medium text-muted-foreground">Recent Activity</h3>
+              <div class="h-8 w-8 rounded-full bg-chart-3/10 flex items-center justify-center text-chart-3">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+            </div>
+            <p class="text-2xl font-bold">Today</p>
+            <p class="text-xs text-muted-foreground mt-2">Last update: 5 hours ago</p>
+          </div>
+        </div>
+        
+        <!-- Teams grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Team 1 -->
+          <div class="team-card">
+            <div class="p-4 border-b border-slate-900/10 bg-primary/5">
+              <div class="flex justify-between items-start">
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-md bg-primary flex items-center justify-center text-primary-foreground font-bold">C</div>
+                  <div>
+                    <h3 class="font-semibold">Clustrex</h3>
+                    <div class="text-xs text-muted-foreground">ID: 372365418</div>
+                  </div>
+                </div>
+                <div class="flex items-center">
+                  <span class="card-badge bg-primary/20 text-primary mr-2">Active</span>
+                  <button class="text-muted-foreground hover:text-foreground">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="p-4">
+              <div class="mb-4">
+                <h4 class="text-sm font-medium mb-2">Projects (3)</h4>
+                <div class="flex flex-wrap">
+                  <span class="project-pill bg-primary/10 text-primary">Emmanuel SDE's team library</span>
+                  <span class="project-pill bg-chart-1/10 text-chart-1">Multi Agent Design</span>
+                  <span class="project-pill bg-chart-2/10 text-chart-2">Oorjahvan</span>
+                </div>
+              </div>
+              
+              <div class="flex items-center justify-between text-sm">
+                <div class="flex items-center text-muted-foreground">
+                  <i class="fa-solid fa-calendar-days mr-1.5"></i>
+                  <span>Added on May 1, 2025</span>
+                </div>
+                <a href="/client/pages/dashboard/projects.html?team=372365418" class="text-primary hover:underline flex items-center">
+                  <span>View Projects</span>
+                  <i class="fa-solid fa-arrow-right ml-1"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Empty state card for adding a new team -->
+          <div class="border border-dashed border-slate-900/10 rounded-lg flex flex-col items-center justify-center p-6 min-h-60">
+            <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+              <i class="fa-solid fa-plus"></i>
+            </div>
+            <h3 class="font-medium mb-1">Add a New Team</h3>
+            <p class="text-sm text-center text-muted-foreground mb-4">Connect your Figma team to access projects</p>
+            <button id="open-add-team-modal-alt" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90">
+              Add Team
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Add Team Modal -->
+  <div id="add-team-modal" class="modal-backdrop">
+    <div class="modal-container max-h-[90vh] overflow-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold">Add Figma Team</h2>
+        <button id="close-modal" class="h-8 w-8 rounded-md hover:bg-accent/50 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      
+      <div class="mb-6">
+        <p class="text-sm text-muted-foreground">Connect your Figma team to access and import your design projects.</p>
+      </div>
+      
+      <form id="add-team-form">
+        <div class="mb-4">
+          <label for="team-link" class="block text-sm font-medium mb-1">Figma Team Link or ID</label>
+          <div class="relative">
+            <input id="team-link" type="text" placeholder="https://www.figma.com/team/..." 
+                   class="w-full px-3 py-2 rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring">
+          </div>
+          <p class="text-xs text-muted-foreground mt-1">Paste your Figma team URL or team ID</p>
+        </div>
+        
+        <div class="bg-muted/30 rounded-lg p-4 mb-6">
+          <h3 class="text-sm font-medium mb-3">How to find your Team Link</h3>
+          <div class="space-y-3">
+            <div class="step">
+              <span class="step-number">1</span>
+              <h4 class="text-sm font-medium">Open Figma</h4>
+              <p class="text-xs text-muted-foreground">Log into your Figma account in the browser or desktop app.</p>
+            </div>
+            
+            <div class="step">
+              <span class="step-number">2</span>
+              <h4 class="text-sm font-medium">Navigate to Teams</h4>
+              <p class="text-xs text-muted-foreground">Click on your team from the left sidebar in Figma.</p>
+            </div>
+            
+            <div class="step">
+              <span class="step-number">3</span>
+              <h4 class="text-sm font-medium">Copy URL or Team ID</h4>
+              <p class="text-xs text-muted-foreground">Copy the URL from your browser address bar or find the team ID in team settings.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-900/10">
+          <button type="button" id="cancel-modal" class="px-4 py-2 rounded-md border border-input hover:bg-accent hover:text-accent-foreground">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90">
+            Add Team
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Initialize dark mode
+    document.documentElement.classList.add('dark');
+    
+    // Modal functionality
+    const modal = document.getElementById('add-team-modal');
+    const modalContainer = modal.querySelector('.modal-container');
+    
+    function openModal() {
+      modal.classList.add('show');
+      setTimeout(() => {
+        modalContainer.classList.add('show');
+      }, 10);
+    }
+    
+    function closeModal() {
+      modalContainer.classList.remove('show');
+      setTimeout(() => {
+        modal.classList.remove('show');
+      }, 200);
+    }
+    
+    // Add event listeners for modal
+    document.getElementById('open-add-team-modal').addEventListener('click', openModal);
+    document.getElementById('open-add-team-modal-alt').addEventListener('click', openModal);
+    document.getElementById('close-modal').addEventListener('click', closeModal);
+    document.getElementById('cancel-modal').addEventListener('click', closeModal);
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+    
+    // Mobile menu functionality
+    const mobileMenu = document.getElementById('mobile-sidebar');
+    
+    document.getElementById('mobile-menu-toggle').addEventListener('click', () => {
+      mobileMenu.classList.remove('-translate-x-full');
+    });
+    
+    document.getElementById('close-mobile-menu').addEventListener('click', () => {
+      mobileMenu.classList.add('-translate-x-full');
+    });
+    
+    // Form submission
+    document.getElementById('add-team-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const teamLink = document.getElementById('team-link').value;
+      
+      // Here you would send the team link/ID to your backend
+      // For demo purposes, we'll just show a loading state and close the modal
+      
+      const submitButton = e.target.querySelector('button[type="submit"]');
+      const originalText = submitButton.innerHTML;
+      
+      submitButton.disabled = true;
+      submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Adding...';
+      
+      // Simulate API request
+      setTimeout(() => {
+        closeModal();
+        
+        // Reset button state
+        setTimeout(() => {
+          submitButton.disabled = false;
+          submitButton.innerHTML = originalText;
+          
+          // Show success message or refresh page to show new team
+          // This would be handled by your actual implementation
+          
+          // For demo, you could add a toast notification here
+        }, 300);
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

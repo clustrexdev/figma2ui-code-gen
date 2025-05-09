@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect to Figma - Fig2UI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --radius: 0.5rem;
+            --background: oklch(1 0 0);
+            --foreground: oklch(0.141 0.005 285.823);
+            --card: oklch(1 0 0);
+            --card-foreground: oklch(0.141 0.005 285.823);
+            --primary: oklch(0.606 0.25 292.717);
+            --primary-foreground: oklch(0.969 0.016 293.756);
+            --secondary: oklch(0.967 0.001 286.375);
+            --secondary-foreground: oklch(0.21 0.006 285.885);
+            --muted: oklch(0.967 0.001 286.375);
+            --muted-foreground: oklch(0.552 0.016 285.938);
+            --accent: oklch(0.967 0.001 286.375);
+            --accent-foreground: oklch(0.21 0.006 285.885);
+            --border: oklch(0.92 0.004 286.32);
+            --input: oklch(0.92 0.004 286.32);
+            --ring: oklch(0.606 0.25 292.717);
+        }
+
+        .dark {
+            --background: oklch(0.141 0.005 285.823);
+            --foreground: oklch(0.985 0 0);
+            --card: oklch(0.21 0.006 285.885);
+            --card-foreground: oklch(0.985 0 0);
+            --primary: oklch(0.541 0.281 293.009);
+            --primary-foreground: oklch(0.969 0.016 293.756);
+            --secondary: oklch(0.274 0.006 286.033);
+            --secondary-foreground: oklch(0.985 0 0);
+            --muted: oklch(0.274 0.006 286.033);
+            --muted-foreground: oklch(0.705 0.015 286.067);
+            --accent: oklch(0.274 0.006 286.033);
+            --accent-foreground: oklch(0.985 0 0);
+            --border: oklch(1 0 0 / 10%);
+            --input: oklch(1 0 0 / 15%);
+            --ring: oklch(0.541 0.281 293.009);
+        }
+
+        .auth-card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .auth-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        .figma-button {
+            background-color: #0D99FF;
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .figma-button:hover {
+            background-color: #0A7ACC;
+            transform: translateY(-1px);
+        }
+
+        .figma-button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-foreground min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Logo and Title -->
+        <div class="text-center mb-8">
+            <img src="../../assets/logo.png" alt="Fig2UI Logo" class="w-16 h-16 mx-auto mb-4">
+            <h1 class="text-2xl font-bold mb-2">Welcome to Fig2UI</h1>
+            <p class="text-muted-foreground">Connect your Figma account to get started</p>
+        </div>
+
+        <!-- Auth Card -->
+        <div class="bg-white shadow-lg p-8">
+            <div class="space-y-6">
+                <!-- Figma Connect Button -->
+                <button
+                    id="figmaConnectBtn"
+                    onclick="connectToFigma()"
+                    class="bg-gradient-to-br from-purple-600 via-indigo-600 to-violet-600 text-white w-full py-3 px-4 rounded-lg flex items-center justify-center gap-3 font-medium"
+                    style="background-image: -webkit-linear-gradient(to bottom right, #8b5cf6, #6366f1, #7c3aed); background-image: linear-gradient(to bottom right, #8b5cf6, #6366f1, #7c3aed);"
+                >
+                    <i class="fab fa-figma text-xl"></i>
+                    <span id="figmaBtnText">Continue with Figma</span>
+                </button>              
+
+                <!-- Divider -->
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-border"></div>
+                    </div>
+                    <div class="relative flex justify-center text-xs">
+                        <span class="bg-card px-2 text-muted-foreground">or</span>
+                    </div>
+                </div>
+
+                <!-- Manual Connect Form -->
+                <form class="space-y-4" onsubmit="handleManualConnect(event)">
+                    <div>
+                        <label for="figma-token" class="block text-sm font-medium mb-2">Figma Access Token</label>
+                        <div class="relative">
+                            <input type="password" id="figma-token" class="w-full px-4 py-2 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring" placeholder="Enter your Figma access token">
+                            <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-3 px-4 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
+                        Connect Account
+                    </button>
+                </form>
+            </div>
+
+            <!-- Help Text -->
+            <div class="mt-6 text-center">
+                <p class="text-sm text-muted-foreground">
+                    Don't have a Figma account? 
+                    <a href="https://www.figma.com/signup" target="_blank" class="text-primary hover:underline">Sign up</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-sm text-muted-foreground">
+            <p>By connecting your account, you agree to our</p>
+            <p>
+                <a href="#" class="text-primary hover:underline">Terms of Service</a>
+                and
+                <a href="#" class="text-primary hover:underline">Privacy Policy</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="../../src/auth/connect.js"></script>
+    <script>
+        // Initialize dark mode
+        document.documentElement.classList.add('dark');
+
+        // Toggle password visibility
+        const togglePassword = document.querySelector('.fa-eye').parentElement;
+        const passwordInput = document.getElementById('figma-token');
+
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePassword.querySelector('i').classList.toggle('fa-eye');
+            togglePassword.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+
+        // Handle manual token connection
+        async function handleManualConnect(event) {
+            event.preventDefault();
+            const token = document.getElementById('figma-token').value;
+            if (!token) {
+                alert('Please enter your Figma access token');
+                return;
+            }
+            
+            try {
+                // Store the token in localStorage
+                localStorage.setItem('figma_access_token', token);
+                // Redirect to the dashboard with correct path
+                window.location.href = '/client/pages/dashboard/overview.html';
+            } catch (error) {
+                alert('Failed to connect: ' + error.message);
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>

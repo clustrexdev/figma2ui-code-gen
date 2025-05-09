@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fig2UI - Overview</title>
+  <meta name="description" content="Collection of components organized by teams and projects" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --radius: 0.5rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.141 0.005 285.823);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.141 0.005 285.823);
+      --popover: oklch(1 0 0);
+      --popover-foreground: oklch(0.141 0.005 285.823);
+      --primary: oklch(0.606 0.25 292.717);
+      --primary-foreground: oklch(0.969 0.016 293.756);
+      --secondary: oklch(0.967 0.001 286.375);
+      --secondary-foreground: oklch(0.21 0.006 285.885);
+      --muted: oklch(0.967 0.001 286.375);
+      --muted-foreground: oklch(0.552 0.016 285.938);
+      --accent: oklch(0.967 0.001 286.375);
+      --accent-foreground: oklch(0.21 0.006 285.885);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.92 0.004 286.32);
+      --input: oklch(0.92 0.004 286.32);
+      --ring: oklch(0.606 0.25 292.717);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.141 0.005 285.823);
+      --sidebar-primary: oklch(0.606 0.25 292.717);
+      --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+      --sidebar-accent: oklch(0.967 0.001 286.375);
+      --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+      --sidebar-border: oklch(0.92 0.004 286.32);
+      --sidebar-ring: oklch(0.606 0.25 292.717);
+    }
+
+    .dark {
+      --background: oklch(0.141 0.005 285.823);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.21 0.006 285.885);
+      --card-foreground: oklch(0.985 0 0);
+      --popover: oklch(0.21 0.006 285.885);
+      --popover-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.541 0.281 293.009);
+      --primary-foreground: oklch(0.969 0.016 293.756);
+      --secondary: oklch(0.274 0.006 286.033);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.274 0.006 286.033);
+      --muted-foreground: oklch(0.705 0.015 286.067);
+      --accent: oklch(0.274 0.006 286.033);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.541 0.281 293.009);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+      --sidebar: oklch(0.21 0.006 285.885);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.541 0.281 293.009);
+      --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+      --sidebar-accent: oklch(0.274 0.006 286.033);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --sidebar-ring: oklch(0.541 0.281 293.009);
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: all 0.2s ease;
+    }
+    .sidebar-item:hover {
+      background-color: color-mix(in oklab, var(--sidebar-accent) 20%, transparent);
+    }
+    .sidebar-item.active {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+
+    .metric-card {
+      background-color: var(--foreground);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      transition: all 0.2s ease;
+    }
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      transition: all 0.2s ease;
+    }
+    .activity-item:hover {
+      background-color: var(--accent-foreground);
+    }
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-foreground">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-sidebar text-sidebar-foreground border-r border-slate-900/10 flex flex-col">
+        <a href="/client/index.html" class="p-4 flex items-center gap-2 border-b border-slate-900/10">
+            <img src="../../assets/logo.png" class="w-8 h-8 object-cover" />
+              <h1 class="text-lg font-bold">Fig2UI</h1>
+          </a>
+
+      <nav class="p-2 flex-1">
+        <div class="mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">APPLICATIONS</div>
+        <a href="/client/pages/dashboard/overview.html" class="sidebar-item active">
+          <i class="fa-solid fa-house w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/client/pages/dashboard/projects.html" class="sidebar-item">
+          <i class="fa-solid fa-folder w-5 h-5"></i>
+          <span>Projects</span>
+        </a>
+        <a href="/client/pages/dashboard/teams.html" class="sidebar-item">
+          <i class="fa-solid fa-users w-5 h-5"></i>
+          <span>Teams</span>
+        </a>
+        <a href="/client/pages/dashboard/components.html" class="sidebar-item">
+          <i class="fa-solid fa-gear w-5 h-5"></i>
+          <span>Components</span>
+        </a>
+
+        <div class="mt-6 mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">WORKSPACE</div>
+        <a href="/client/pages/dashboard/providers.html" class="sidebar-item">
+          <i class="fa-solid fa-user-group w-5 h-5"></i>
+          <span>Providers</span>
+        </a>
+        <a href="/client/pages/dashboard/deployments.html" class="sidebar-item">
+          <i class="fa-solid fa-star w-5 h-5"></i>
+          <span>Deployments</span>
+        </a>
+        <a href="/client/pages/dashboard/notifications.html" class="sidebar-item">
+          <i class="fa-solid fa-clock-rotate-left w-5 h-5"></i>
+          <span>Notifications</span>
+        </a>
+      </nav>
+
+      <div class="p-4 border-t border-slate-900/10">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">U</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">User Name</p>
+            <p class="text-xs text-muted-foreground truncate">user@example.com</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex-1 flex flex-col">
+      <!-- Header -->
+      <header class="h-16 border-b border-slate-900/10 flex items-center justify-between px-6">
+        <div class="flex items-center gap-4">
+          <h2 class="text-lg font-semibold">Dashboard</h2>
+          <div class="text-sm text-muted-foreground">Welcome back! Here's what's happening with your projects.</div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></i>
+            <input type="text" placeholder="Search..." class="pl-9 pr-4 py-2 rounded-md border border-input bg-background w-64 focus:outline-none focus:ring-2 focus:ring-ring">
+          </div>
+          
+          <button class="w-9 h-9 rounded-full flex items-center justify-center border border-input hover:bg-accent hover:text-accent-foreground">
+            <i class="fa-solid fa-bell"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Page content -->
+      <div class="flex-1 p-6 overflow-auto">
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div class="metric-card">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-sm font-medium text-muted-foreground">Total Projects</h3>
+              <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <i class="fa-solid fa-folder"></i>
+              </div>
+            </div>
+            <p class="text-2xl font-bold">24</p>
+            <p class="text-xs text-muted-foreground mt-2">+3 from last month</p>
+          </div>
+
+          <div class="metric-card">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-sm font-medium text-muted-foreground">Active Teams</h3>
+              <div class="h-8 w-8 rounded-full bg-chart-1/10 flex items-center justify-center text-chart-1">
+                <i class="fa-solid fa-users"></i>
+              </div>
+            </div>
+            <p class="text-2xl font-bold">5</p>
+            <p class="text-xs text-muted-foreground mt-2">2 teams added recently</p>
+          </div>
+
+          <div class="metric-card">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-sm font-medium text-muted-foreground">Components</h3>
+              <div class="h-8 w-8 rounded-full bg-chart-2/10 flex items-center justify-center text-chart-2">
+                <i class="fa-solid fa-cube"></i>
+              </div>
+            </div>
+            <p class="text-2xl font-bold">156</p>
+            <p class="text-xs text-muted-foreground mt-2">+12 this week</p>
+          </div>
+
+          <div class="metric-card">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-sm font-medium text-muted-foreground">Conversions</h3>
+              <div class="h-8 w-8 rounded-full bg-chart-3/10 flex items-center justify-center text-chart-3">
+                <i class="fa-solid fa-code"></i>
+              </div>
+            </div>
+            <p class="text-2xl font-bold">89%</p>
+            <p class="text-xs text-muted-foreground mt-2">+5% from last week</p>
+          </div>
+        </div>
+
+        <!-- Charts and Activity -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <!-- Conversion Rate Chart -->
+          <div class="lg:col-span-2 bg-card border border-slate-900/10 rounded-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-lg font-semibold">Conversion Rate</h3>
+              <div class="flex gap-2">
+                <button class="px-3 py-1.5 rounded-full text-xs font-medium bg-accent text-accent-foreground">Weekly</button>
+                <button class="px-3 py-1.5 rounded-full text-xs font-medium hover:bg-accent hover:text-accent-foreground">Monthly</button>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="conversionChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="bg-card border border-slate-900/10 rounded-lg overflow-hidden">
+            <div class="p-6 border-b border-slate-900/10">
+              <h3 class="text-lg font-semibold">Recent Activity</h3>
+            </div>
+            <div class="divide-y divide-slate-900/10">
+              <div class="activity-item">
+                <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <i class="fa-solid fa-code"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium">New component converted</p>
+                  <p class="text-xs text-muted-foreground">Button component from Clustrex team</p>
+                </div>
+                <span class="text-xs text-muted-foreground">2m ago</span>
+              </div>
+              <div class="activity-item">
+                <div class="h-8 w-8 rounded-full bg-chart-1/10 flex items-center justify-center text-chart-1">
+                  <i class="fa-solid fa-folder"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium">Project created</p>
+                  <p class="text-xs text-muted-foreground">Multi Agent Design in Clustrex team</p>
+                </div>
+                <span class="text-xs text-muted-foreground">1h ago</span>
+              </div>
+              <div class="activity-item">
+                <div class="h-8 w-8 rounded-full bg-chart-2/10 flex items-center justify-center text-chart-2">
+                  <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium">Team joined</p>
+                  <p class="text-xs text-muted-foreground">Design Systems team added</p>
+                </div>
+                <span class="text-xs text-muted-foreground">3h ago</span>
+              </div>
+              <div class="activity-item">
+                <div class="h-8 w-8 rounded-full bg-chart-3/10 flex items-center justify-center text-chart-3">
+                  <i class="fa-solid fa-cube"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium">Components updated</p>
+                  <p class="text-xs text-muted-foreground">12 components in Core Design System</p>
+                </div>
+                <span class="text-xs text-muted-foreground">5h ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Projects -->
+        <div class="bg-card border border-slate-900/10 rounded-lg overflow-hidden">
+          <div class="p-6 border-b border-slate-900/10 flex justify-between items-center">
+            <h3 class="text-lg font-semibold">Recent Projects</h3>
+            <a href="/client/pages/dashboard/projects.html" class="text-sm text-primary hover:underline">View all</a>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-slate-900/10">
+                  <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground">Project</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground">Team</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground">Components</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground">Last Updated</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-900/10">
+                <tr class="hover:bg-accent/50">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="h-8 w-8 rounded bg-primary/10 flex items-center justify-center text-primary">
+                        <i class="fa-solid fa-folder"></i>
+                      </div>
+                      <div>
+                        <p class="font-medium">Emmanuel SDE's team library</p>
+                        <p class="text-xs text-muted-foreground">Team Library</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs">C</div>
+                      <span>Clustrex</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">24</td>
+                  <td class="px-6 py-4">
+                    <div class="text-sm">Apr 22, 2025</div>
+                    <div class="text-xs text-muted-foreground">2 days ago</div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/20 text-primary">Active</span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-accent/50">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="h-8 w-8 rounded bg-chart-1/10 flex items-center justify-center text-chart-1">
+                        <i class="fa-solid fa-folder"></i>
+                      </div>
+                      <div>
+                        <p class="font-medium">Multi Agent Design</p>
+                        <p class="text-xs text-muted-foreground">Design Project</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs">C</div>
+                      <span>Clustrex</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">18</td>
+                  <td class="px-6 py-4">
+                    <div class="text-sm">Apr 23, 2025</div>
+                    <div class="text-xs text-muted-foreground">1 day ago</div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-chart-1/20 text-chart-1">In Progress</span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-accent/50">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="h-8 w-8 rounded bg-chart-2/10 flex items-center justify-center text-chart-2">
+                        <i class="fa-solid fa-folder"></i>
+                      </div>
+                      <div>
+                        <p class="font-medium">Oorjahvan</p>
+                        <p class="text-xs text-muted-foreground">Web Project</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs">C</div>
+                      <span>Clustrex</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">32</td>
+                  <td class="px-6 py-4">
+                    <div class="text-sm">May 9, 2025</div>
+                    <div class="text-xs text-muted-foreground">Just now</div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-chart-2/20 text-chart-2">Recent</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize dark mode
+    document.documentElement.classList.add('dark');
+
+    // Conversion Rate Chart
+    const ctx = document.getElementById('conversionChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        datasets: [{
+          label: 'Conversion Rate',
+          data: [75, 82, 85, 89],
+          borderColor: 'oklch(0.541 0.281 293.009)',
+          backgroundColor: 'oklch(0.541 0.281 293.009 / 0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            min: 70,
+            max: 100,
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+  <script src="/client/src/auth/fetchUserDashboard.js"></script>
+</body>
+</html>
