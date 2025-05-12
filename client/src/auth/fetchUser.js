@@ -1,8 +1,12 @@
 async function FetchUser() {
     try {
+        const accessToken = localStorage.getItem('figma_access_token');
+
+        if (!accessToken) return; // No token = no need to fetch or modify UI
+        
         const endpoint = "https://api.figma.com/v1/me";
         const headers = {
-            "X-FIGMA-TOKEN": window.localStorage.getItem("figma_access_token")
+            'Authorization': `Bearer ${accessToken}`
         };
 
         const response = await fetch(endpoint, {
