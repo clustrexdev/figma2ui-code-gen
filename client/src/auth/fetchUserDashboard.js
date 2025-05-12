@@ -1,8 +1,10 @@
 async function FetchUser() {
     try {
+        // window.localStorage.getItem("figma_access_token")
+        console.log(window.localStorage.getItem("figma_accdess_token"))
         const endpoint = "https://api.figma.com/v1/me";
         const headers = {
-            "X-FIGMA-TOKEN": window.localStorage.getItem("figma_access_token")
+            "X-FIGMA-TOKEN": window.localStorage.getItem('figma_accdess_token'), 
         };
 
         const response = await fetch(endpoint, {

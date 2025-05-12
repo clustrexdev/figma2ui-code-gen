@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fig2UI - Code</title>
+    <meta name="description" content="Collection of components organized by teams and projects" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --radius: 0.5rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.141 0.005 285.823);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.141 0.005 285.823);
+      --popover: oklch(1 0 0);
+      --popover-foreground: oklch(0.141 0.005 285.823);
+      --primary: oklch(0.606 0.25 292.717);
+      --primary-foreground: oklch(0.969 0.016 293.756);
+      --secondary: oklch(0.967 0.001 286.375);
+      --secondary-foreground: oklch(0.21 0.006 285.885);
+      --muted: oklch(0.967 0.001 286.375);
+      --muted-foreground: oklch(0.552 0.016 285.938);
+      --accent: oklch(0.967 0.001 286.375);
+      --accent-foreground: oklch(0.21 0.006 285.885);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.92 0.004 286.32);
+      --input: oklch(0.92 0.004 286.32);
+      --ring: oklch(0.606 0.25 292.717);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.141 0.005 285.823);
+      --sidebar-primary: oklch(0.606 0.25 292.717);
+      --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+      --sidebar-accent: oklch(0.967 0.001 286.375);
+      --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+      --sidebar-border: oklch(0.92 0.004 286.32);
+      --sidebar-ring: oklch(0.606 0.25 292.717);
+    }
+
+    .dark {
+      --background: oklch(0.141 0.005 285.823);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.21 0.006 285.885);
+      --card-foreground: oklch(0.985 0 0);
+      --popover: oklch(0.21 0.006 285.885);
+      --popover-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.541 0.281 293.009);
+      --primary-foreground: oklch(0.969 0.016 293.756);
+      --secondary: oklch(0.274 0.006 286.033);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.274 0.006 286.033);
+      --muted-foreground: oklch(0.705 0.015 286.067);
+      --accent: oklch(0.274 0.006 286.033);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.541 0.281 293.009);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+      --sidebar: oklch(0.21 0.006 285.885);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.541 0.281 293.009);
+      --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+      --sidebar-accent: oklch(0.274 0.006 286.033);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --sidebar-ring: oklch(0.541 0.281 293.009);
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: all 0.2s ease;
+    }
+    .sidebar-item:hover {
+      background-color: color-mix(in oklab, var(--sidebar-accent) 20%, transparent);
+    }
+    .sidebar-item.active {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+    
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    
+    .modal.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .modal-content {
+      width: 100%;
+      max-width: 500px;
+      background-color: var(--card);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      transform: translateY(-20px);
+      transition: transform 0.3s ease;
+    }
+    
+    .modal.open .modal-content {
+      transform: translateY(0);
+    }
+    
+    .phase-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem; /* px-2 py-1 */
+  border-radius: 9999px; /* rounded-full */
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 500; /* font-medium */
+}
+
+/* Planning */
+.phase-planning {
+  background-color: #DBEAFE; /* bg-blue-100 */
+  color: #1E40AF; /* text-blue-800 */
+}
+@media (prefers-color-scheme: dark) {
+  .phase-planning {
+    background-color: rgba(30, 58, 138, 0.3); /* dark:bg-blue-900/30 */
+    color: #93C5FD; /* dark:text-blue-300 */
+  }
+}
+
+/* Design */
+.phase-design {
+  background-color: #E9D5FF; /* bg-purple-100 */
+  color: #6B21A8; /* text-purple-800 */
+}
+@media (prefers-color-scheme: dark) {
+  .phase-design {
+    background-color: rgba(107, 33, 168, 0.3); /* dark:bg-purple-900/30 */
+    color: #D8B4FE; /* dark:text-purple-300 */
+  }
+}
+
+/* Development */
+.phase-development {
+  background-color: #FEF3C7; /* bg-amber-100 */
+  color: #92400E; /* text-amber-800 */
+}
+@media (prefers-color-scheme: dark) {
+  .phase-development {
+    background-color: rgba(120, 53, 15, 0.3); /* dark:bg-amber-900/30 */
+    color: #FCD34D; /* dark:text-amber-300 */
+  }
+}
+
+/* Testing */
+.phase-testing {
+  background-color: #D1FAE5; /* bg-green-100 */
+  color: #065F46; /* text-green-800 */
+}
+@media (prefers-color-scheme: dark) {
+  .phase-testing {
+    background-color: rgba(6, 95, 70, 0.3); /* dark:bg-green-900/30 */
+    color: #86EFAC; /* dark:text-green-300 */
+  }
+}
+
+/* Deployment */
+.phase-deployment {
+  background-color: #CCFBF1; /* bg-teal-100 */
+  color: #134E4A; /* text-teal-800 */
+}
+@media (prefers-color-scheme: dark) {
+  .phase-deployment {
+    background-color: rgba(19, 78, 74, 0.3); /* dark:bg-teal-900/30 */
+    color: #5EEAD4; /* dark:text-teal-300 */
+  }
+}
+
+  </style>
+</head>
+<body class="bg-slate-50 text-foreground">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-sidebar text-sidebar-foreground border-r border-slate-900/10 flex flex-col">
+      <a href="/client/index.html" class="p-4 flex items-center gap-2 border-b border-slate-900/10">
+      <img src="../../assets/logo.png" class="w-8 h-8 object-cover" />
+        <h1 class="text-lg font-bold">Fig2UI</h1>
+      </a>
+
+      <nav class="p-2 flex-1">
+        <div class="mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">APPLICATIONS</div>
+        <a href="/client/pages/dashboard/overview.html" class="sidebar-item">
+          <i class="fa-solid fa-house w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/client/pages/dashboard/projects.html" class="sidebar-item">
+          <i class="fa-solid fa-folder w-5 h-5"></i>
+          <span>Projects</span>
+        </a>
+        <a href="/client/pages/dashboard/teams.html" class="sidebar-item">
+          <i class="fa-solid fa-users w-5 h-5"></i>
+          <span>Teams</span>
+        </a>
+        <a href="/client/pages/dashboard/components.html" class="sidebar-item">
+          <i class="fa-solid fa-gear w-5 h-5"></i>
+          <span>Components</span>
+        </a>
+
+        <div class="mt-6 mb-2 px-4 py-1 text-xs font-medium text-muted-foreground">WORKSPACE</div>
+        <a href="/client/pages/dashboard/code.html" class="sidebar-item active">
+          <i class="fa-solid fa-code w-5 h-5"></i>
+          <span>Code</span>
+        </a>
+        <a href="/client/pages/dashboard/providers.html" class="sidebar-item">
+          <i class="fa-solid fa-user-group w-5 h-5"></i>
+          <span>Providers</span>
+        </a>
+        <a href="/client/pages/dashboard/deployments.html" class="sidebar-item">
+          <i class="fa-solid fa-star w-5 h-5"></i>
+          <span>Deployments</span>
+        </a>
+        <a href="/client/pages/dashboard/notifications.html" class="sidebar-item">
+          <i class="fa-solid fa-clock-rotate-left w-5 h-5"></i>
+          <span>Notifications</span>
+        </a>
+      </nav>
+
+      <div class="p-4 border-t border-slate-900/10">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">U</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">User Name</p>
+            <p class="text-xs text-muted-foreground truncate">user@example.com</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="flex-1">
+      <!-- Header -->
+      <header class="bg-card border-b border-slate-900/10 sticky top-0 z-10">
+        <div class="px-8 py-4 flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold">Code Generations</h1>
+            <p class="text-sm text-muted-foreground">Create and manage your code generations from designs</p>
+          </div>
+          <div class="flex gap-4">
+            <div class="relative">
+              <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"></i>
+              <input type="text" placeholder="Search generations..." class="pl-10 pr-4 py-2 rounded-md border border-input bg-background w-64 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
+            </div>
+            <button id="openNewGenerationModal" class="px-4 py-2 bg-primary text-primary-foreground rounded-md flex items-center gap-2 hover:bg-primary-foreground hover:text-primary transition-colors">
+              <i class="fa-solid fa-plus"></i>
+              <span>New Generation</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="px-8 flex border-b border-slate-900/10">
+          <button class="px-4 py-2 border-b-2 border-primary text-primary font-medium">All Generations</button>
+          <button class="px-4 py-2 border-b-2 border-transparent text-muted-foreground hover:text-foreground transition-colors">Recent</button>
+          <button class="px-4 py-2 border-b-2 border-transparent text-muted-foreground hover:text-foreground transition-colors">Favorites</button>
+          <button class="px-4 py-2 border-b-2 border-transparent text-muted-foreground hover:text-foreground transition-colors">Archived</button>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="p-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Generation Card 1 -->
+          <div class="bg-card rounded-lg border border-slate-900/10 overflow-hidden shadow-sm hover:shadow-md transition-shadow relative z-0">
+            <div class="aspect-video bg-slate-800 relative overflow-hidden">
+              <img src="/client/assets/original-fe0b6a17ce806e5b4e2d4f72a4df8397.webp" class="w-full h-full object-cover" alt="Design thumbnail" />
+              <div class="absolute top-3 right-3 flex gap-2">
+                <button class="w-8 h-8 rounded-full bg-slate-900/60 text-white flex items-center justify-center hover:bg-slate-900/80 transition-colors">
+                  <i class="fa-solid fa-star"></i>
+                </button>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-semibold text-lg">User Profile Layout</h3>
+                <div class="relative">
+                  <button class="w-8 h-8 rounded-full hover:bg-slate-900/10 flex items-center justify-center">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 mb-3">
+                <div class="phase-badge phase-development">Development</div>
+                <span class="text-xs text-muted-foreground">Created 4 days ago</span>
+              </div>
+              <div class="flex items-center gap-3 mb-4">
+                <div class="flex items-center gap-1.5">
+                  <div class="w-5 h-5 rounded-md bg-blue-500 flex items-center justify-center text-white">
+                    <i class="fa-brands fa-figma text-xs"></i>
+                  </div>
+                  <span class="text-xs">Figma</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="w-5 h-5 rounded-md bg-orange-600 flex items-center justify-center text-white">
+                    <i class="fa-brands fa-aws text-xs"></i>
+                  </div>
+                  <span class="text-xs">AWS</span>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button class="flex-1 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-sm hover:bg-primary-foreground hover:text-primary transition-colors">
+                  <a href="code-id/single.html?id=1234">Open</a>
+                </button>
+                <button class="px-3 py-1.5 rounded-md border border-slate-900/10 text-sm hover:bg-slate-900/10 transition-colors">
+                  <i class="fa-solid fa-code-branch"></i>
+                </button>
+                <button class="px-3 py-1.5 rounded-md border border-slate-900/10 text-sm hover:bg-slate-900/10 transition-colors">
+                  <i class="fa-solid fa-download"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- New Generation Modal -->
+  <div id="newGenerationModal" class="modal">
+    <div class="modal-content">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold">Create New Generation</h2>
+          <button id="closeModal" class="w-8 h-8 rounded-full hover:bg-slate-900/10 flex items-center justify-center">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        
+        <form id="newGenerationForm">
+          <div class="space-y-4">
+            <div>
+              <label for="title" class="block text-sm font-medium mb-1">Project Title</label>
+              <input type="text" id="title" class="w-full px-3 py-2 rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter project title" />
+            </div>
+            
+            <div>
+              <label for="designSource" class="block text-sm font-medium mb-1">Design Source</label>
+              <select id="designSource" class="w-full px-3 py-2 rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                <option value="" disabled selected>Select design source</option>
+                <option value="figma">Figma</option>
+                <option value="sketch">Sketch</option>
+                <option value="adobe-xd">Adobe XD</option>
+                <option value="custom">Custom Upload</option>
+              </select>
+            </div>
+            
+            <div>
+              <label for="designUrl" class="block text-sm font-medium mb-1">Design URL</label>
+              <input type="text" id="designUrl" class="w-full px-3 py-2 rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="https://figma.com/file/..." />
+            </div>
+            
+            <div>
+              <label for="providers" class="block text-sm font-medium mb-1">Integration Providers</label>
+              <div class="grid grid-cols-3 gap-2">
+                <label class="flex items-center gap-2 p-2 border border-input rounded-md cursor-pointer hover:bg-slate-900/5 transition-colors">
+                  <input type="checkbox" class="rounded text-primary" value="github" />
+                  <i class="fa-brands fa-github w-4 h-4"></i>
+                  <span class="text-sm">GitHub</span>
+                </label>
+                <label class="flex items-center gap-2 p-2 border border-input rounded-md cursor-pointer hover:bg-slate-900/5 transition-colors">
+                  <input type="checkbox" class="rounded text-primary" value="gitlab" />
+                  <i class="fa-brands fa-gitlab w-4 h-4"></i>
+                  <span class="text-sm">GitLab</span>
+                </label>
+                <label class="flex items-center gap-2 p-2 border border-input rounded-md cursor-pointer hover:bg-slate-900/5 transition-colors">
+                  <input type="checkbox" class="rounded text-primary" value="jenkins" />
+                  <i class="fa-brands fa-jenkins w-4 h-4"></i>
+                  <span class="text-sm">Jenkins</span>
+                </label>
+                <label class="flex items-center gap-2 p-2 border border-input rounded-md cursor-pointer hover:bg-slate-900/5 transition-colors">
+                  <input type="checkbox" class="rounded text-primary" value="aws" />
+                  <i class="fa-brands fa-aws w-4 h-4"></i>
+                  <span class="text-sm">AWS</span>
+                </label>
+                <label class="flex items-center gap-2 p-2 border border-input rounded-md cursor-pointer hover:bg-slate-900/5 transition-colors">
+                  <input type="checkbox" class="rounded text-primary" value="jira" />
+                  <i class="fa-brands fa-jira w-4 h-4"></i>
+                  <span class="text-sm">Jira</span>
+                </label>
+                <label class="flex items-center gap-2 p-2 border border-input rounded-md cursor-pointer hover:bg-slate-900/5 transition-colors">
+                  <input type="checkbox" class="rounded text-primary" value="firebase" />
+                  <i class="fa-solid fa-fire w-4 h-4"></i>
+                  <span class="text-sm">Firebase</span>
+                </label>
+              </div>
+            </div>
+            
+            <div>
+              <label for="phase" class="block text-sm font-medium mb-1">Initial Phase</label>
+              <select id="phase" class="w-full px-3 py-2 rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                <option value="planning">Planning</option>
+                <option value="design" selected>Design</option>
+                <option value="development">Development</option>
+                <option value="testing">Testing</option>
+                <option value="deployment">Deployment</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="mt-6 flex justify-end gap-3">
+            <button type="button" id="cancelButton" class="px-4 py-2 rounded-md border border-slate-900/10 text-sm hover:bg-slate-900/5 transition-colors">
+              Cancel
+            </button>
+            <button type="submit" class="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary-foreground hover:text-primary transition-colors">
+              Create Generation
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Modal functionality
+      const modal = document.getElementById('newGenerationModal');
+      const openModalBtn = document.getElementById('openNewGenerationModal');
+      const closeModal = document.getElementById('closeModal');
+      const cancelButton = document.getElementById('cancelButton');
+      const newGenerationForm = document.getElementById('newGenerationForm');
+      
+      openModalBtn.addEventListener('click', function() {
+        modal.classList.add('open');
+      });
+      
+      function closeModalFunc() {
+        modal.classList.remove('open');
+      }
+      
+      closeModal.addEventListener('click', closeModalFunc);
+      cancelButton.addEventListener('click', closeModalFunc);
+      
+      // Close modal when clicking outside of modal content
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          closeModalFunc();
+        }
+      });
+      
+      // Form submission
+      newGenerationForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Get form values
+        const title = document.getElementById('title').value;
+        const designSource = document.getElementById('designSource').value;
+        const designUrl = document.getElementById('designUrl').value;
+        const phase = document.getElementById('phase').value;
+        
+        // Get selected providers
+        const selectedProviders = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+        
+        // Here you would normally send this data to your backend
+        console.log({
+          title,
+          designSource,
+          designUrl,
+          phase,
+          selectedProviders
+        });
+        
+        // Close the modal
+        closeModalFunc();
+        
+        // Reset form
+        newGenerationForm.reset();
+        
+        // Show notification (optional)/api/placeholder/800/450
+        alert('Generation created successfully!');
+      });
+
+      // Toggle dropdown menus
+      const dropdownButtons = document.querySelectorAll('button:has(.fa-ellipsis-vertical)');
+      dropdownButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.stopPropagation();
+          
+          // Create dropdown menu if it doesn't exist
+          let dropdownMenu = this.parentElement.querySelector('.dropdown-menu');
+          if (!dropdownMenu) {
+            dropdownMenu = document.createElement('div');
+            dropdownMenu.className = 'absolute right-0 top-full mt-1 min-w-[160px] bg-popover border border-slate-900/10 rounded-md shadow-lg z-50 hidden';
+            dropdownMenu.innerHTML = `
+              <div class="p-1 z-20">
+                <button class="w-full px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors">Edit</button>
+                <button class="w-full px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors">Duplicate</button>
+                <button class="w-full px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors">Share</button>
+                <button class="w-full px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors">Archive</button>
+                <button class="w-full px-3 py-2 text-sm text-left text-destructive hover:bg-destructive/10 rounded-sm transition-colors">Delete</button>
+              </div>
+            `;
+            this.parentElement.appendChild(dropdownMenu);
+          }
+          
+          // Toggle visibility
+          dropdownMenu.classList.toggle('hidden');
+        });
+      });
+      
+      // Close dropdowns when clicking elsewhere
+      document.addEventListener('click', function() {
+        const dropdownMenus = document.querySelectorAll('.dropdown-menu:not(.hidden)');
+        dropdownMenus.forEach(menu => {
+          menu.classList.add('hidden');
+        });
+      });
+      
+      // Search functionality
+      const searchInput = document.querySelector('input[type="text"][placeholder="Search generations..."]');
+      searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const generationCards = document.querySelectorAll('.grid > .bg-card');
+        
+        generationCards.forEach(card => {
+          const title = card.querySelector('h3').textContent.toLowerCase();
+          const phase = card.querySelector('.phase-badge').textContent.toLowerCase();
+          const providers = Array.from(card.querySelectorAll('.flex.items-center.gap-1\\.5 span')).map(span => span.textContent.toLowerCase());
+          
+          const isMatch = title.includes(searchTerm) || 
+                          phase.includes(searchTerm) ||
+                          providers.some(provider => provider.includes(searchTerm));
+          
+          card.closest('.bg-card').style.display = isMatch ? '' : 'none';
+        });
+      });
+      
+      // Favorite toggle functionality
+      const starButtons = document.querySelectorAll('.absolute.top-3.right-3 button');
+      starButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const icon = this.querySelector('i');
+          if (icon.classList.contains('fa-regular')) {
+            icon.classList.remove('fa-regular');
+            icon.classList.add('fa-solid');
+          } else {
+            icon.classList.remove('fa-solid');
+            icon.classList.add('fa-regular');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
