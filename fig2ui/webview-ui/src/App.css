@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100%;
+}
+
+/* Additional custom styles */
+.chat-bubble-user {
+  border-radius: 18px 18px 0 18px;
+}
+.chat-bubble-assistant {
+  border-radius: 18px 18px 18px 0;
+}
+.typing-animation::after {
+  content: '...';
+  animation: typing 1.5s infinite;
+}
+@keyframes typing {
+  0%, 100% { content: '.'; }
+  33% { content: '..'; }
+  66% { content: '...'; }
+}
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #18181b;
+}
+::-webkit-scrollbar-thumb {
+  background: #39e75f;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00bc7d;
+}

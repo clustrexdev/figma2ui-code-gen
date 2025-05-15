@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fig2UI | Top notch Code generator</title>
+  <meta name="description" content="A code generation plugin suitable for React Native, React, HTML with framework specified to generate code based on input Figma designs." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/10.0.0/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#39e75f',
+            secondary: '#00bc7d',
+            dark: '#18181b',
+            'dark-green': '#0a2b1e'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Additional custom styles */
+    .chat-bubble-user {
+      border-radius: 18px 18px 0 18px;
+    }
+    .chat-bubble-assistant {
+      border-radius: 18px 18px 18px 0;
+    }
+    .typing-animation::after {
+      content: '...';
+      animation: typing 1.5s infinite;
+    }
+    @keyframes typing {
+      0%, 100% { content: '.'; }
+      33% { content: '..'; }
+      66% { content: '...'; }
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #18181b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #39e75f;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00bc7d;
+    }
+  </style>
+</head>
+<body class="bg-dark text-white flex flex-col h-screen overflow-hidden">
+  <!-- Header -->
+  <header class="bg-dark-green p-4 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+          </svg>
+        </div>
+        <h1 class="text-2xl font-bold">Fig2UI</h1>
+      </div>
+      <div class="hidden md:flex items-center space-x-4">
+        <a href="#" class="hover:text-primary transition-colors">Documentation</a>
+        <a href="#" class="hover:text-primary transition-colors">Examples</a>
+        <a href="#" class="hover:text-primary transition-colors">Pricing</a>
+        <button id="settingsBtn" class="bg-dark px-4 py-2 rounded-lg hover:bg-opacity-80 transition-colors flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Settings
+        </button>
+      </div>
+      <button class="md:hidden text-white" id="mobileMenuBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex flex-1 overflow-hidden">
+    <!-- Left Sidebar -->
+    <div class="hidden md:block bg-dark-green w-64 p-4 overflow-y-auto">
+      <div class="mb-4">
+        <button id="newChatBtn" class="bg-primary text-dark w-full py-2 rounded-lg flex items-center justify-center font-medium hover:bg-opacity-90 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          New Chat
+        </button>
+      </div>
+
+      <div class="mb-4">
+        <h3 class="text-sm text-gray-400 mb-2">Figma File</h3>
+        <div class="bg-dark rounded-lg p-3 mb-3">
+          <input type="text" placeholder="Paste Figma URL" class="w-full bg-transparent border-b border-gray-700 pb-1 focus:outline-none focus:border-primary text-sm" id="figmaUrlInput">
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <h3 class="text-sm text-gray-400 mb-2">Output Format</h3>
+        <select class="w-full bg-dark text-white p-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary">
+          <option>React</option>
+          <option>React Native</option>
+          <option>HTML/CSS</option>
+          <option>Vue.js</option>
+          <option>Angular</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <h3 class="text-sm text-gray-400 mb-2">Styling Method</h3>
+        <select class="w-full bg-dark text-white p-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary">
+          <option>Tailwind CSS</option>
+          <option>CSS Modules</option>
+          <option>Styled Components</option>
+          <option>Inline Styles</option>
+          <option>SASS/SCSS</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <h3 class="text-sm text-gray-400 mb-2">Recent Chats</h3>
+        <div class="space-y-2">
+          <div class="bg-dark rounded-lg p-2 cursor-pointer hover:bg-opacity-70">
+            <p class="text-sm truncate">Dashboard Redesign</p>
+            <p class="text-xs text-gray-400">May 12, 2025</p>
+          </div>
+          <div class="bg-dark rounded-lg p-2 cursor-pointer hover:bg-opacity-70">
+            <p class="text-sm truncate">Mobile App Login</p>
+            <p class="text-xs text-gray-400">May 10, 2025</p>
+          </div>
+          <div class="bg-dark rounded-lg p-2 cursor-pointer hover:bg-opacity-70">
+            <p class="text-sm truncate">E-commerce Product Page</p>
+            <p class="text-xs text-gray-400">May 8, 2025</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="flex-1 flex flex-col bg-dark">
+      <!-- Chat Messages Area -->
+      <div id="chatContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
+        <!-- Welcome Message -->
+        <div class="chat-message">
+          <div class="flex items-center mb-1">
+            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+              </svg>
+            </div>
+            <span class="font-semibold">Fig2UI Assistant</span>
+          </div>
+          <div class="bg-dark-green p-4 rounded-lg chat-bubble-assistant">
+            <p>ðŸ‘‹ Welcome to Fig2UI! I can generate code from your Figma designs. To get started:</p>
+            <ol class="list-decimal pl-5 mt-2 space-y-1">
+              <li>Paste your Figma file URL in the sidebar</li>
+              <li>Select your preferred output format</li>
+              <li>Describe what component you'd like to generate</li>
+            </ol>
+            <p class="mt-2">Need examples? Type "show examples" to see what I can do!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Area -->
+      <div class="border-t border-gray-800 p-4">
+        <div class="flex items-center">
+          <button id="uploadBtn" class="p-2 rounded-full hover:bg-gray-800 mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+          </button>
+          <div class="flex-1 relative items-center flex-row">
+            <input type="file" id="fileInput" class="hidden" multiple>
+            <textarea id="userInput" rows="1" placeholder="Describe what component you want to generate..." class="w-full bg-dark-green rounded-lg py-3 px-4 pr-16 resize-none focus:outline-none focus:ring-1 focus:ring-primary"></textarea>
+            <button id="sendBtn" class="absolute right-2 bottom-3 p-1 rounded-full bg-primary text-dark">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="uploadPreview" class="mt-2 flex flex-wrap gap-2 hidden"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-dark-green rounded-xl w-full max-w-md p-6 shadow-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">Settings</h2>
+        <button id="closeSettingsBtn" class="text-gray-400 hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">API Key</label>
+          <input type="password" class="w-full bg-dark rounded-lg p-2 border border-gray-700 focus:outline-none focus:border-primary" placeholder="Enter your API key">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Theme</label>
+          <select class="w-full bg-dark text-white p-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary">
+            <option>Dark (Default)</option>
+            <option>Light</option>
+            <option>System</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Code Generation</label>
+          <div class="flex items-center">
+            <input type="checkbox" id="autoFormat" class="mr-2 h-4 w-4">
+            <label for="autoFormat">Auto-format generated code</label>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Language</label>
+          <select class="w-full bg-dark text-white p-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary">
+            <option>English</option>
+            <option>Spanish</option>
+            <option>French</option>
+            <option>German</option>
+            <option>Japanese</option>
+          </select>
+        </div>
+        <button class="bg-primary text-dark w-full py-2 rounded-lg font-medium hover:bg-opacity-90 transition-colors">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- File Upload Modal -->
+  <div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-dark-green rounded-xl w-full max-w-md p-6 shadow-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">Upload Files</h2>
+        <button id="closeUploadBtn" class="text-gray-400 hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        </svg>
+        <p class="mb-2">Drag and drop files here or</p>
+        <button class="bg-primary text-dark px-4 py-2 rounded-lg inline-block">Browse Files</button>
+        <p class="text-xs text-gray-400 mt-2">Supported formats: PNG, JPG, SVG, Figma links</p>
+      </div>
+      <div class="flex justify-end">
+        <button id="confirmUploadBtn" class="bg-primary text-dark px-4 py-2 rounded-lg">Upload</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu (Slide Out) -->
+  <div id="mobileMenu" class="fixed inset-y-0 left-0 w-3/4 bg-dark-green transform -translate-x-full transition-transform duration-300 ease-in-out z-40 p-4 overflow-y-auto">
+    <div class="mb-8 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+          </svg>
+        </div>
+        <h1 class="text-xl font-bold">Fig2UI</h1>
+      </div>
+      <button id="closeMobileMenuBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <nav class="mb-6">
+      <a href="#" class="block py-2 hover:text-primary transition-colors">Documentation</a>
+      <a href="#" class="block py-2 hover:text-primary transition-colors">Examples</a>
+      <a href="#" class="block py-2 hover:text-primary transition-colors">Pricing</a>
+      <button id="mobileSettingsBtn" class="block py-2 hover:text-primary transition-colors w-full text-left">Settings</button>
+    </nav>
+
+    <div class="mb-4">
+      <button class="bg-primary text-dark w-full py-2 rounded-lg flex items-center justify-center font-medium hover:bg-opacity-90 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        New Chat
+      </button>
+    </div>
+
+    <div class="mb-4">
+      <h3 class="text-sm text-gray-400 mb-2">Figma File</h3>
+      <div class="bg-dark rounded-lg p-3 mb-3">
+        <input type="text" placeholder="Paste Figma URL" class="w-full bg-transparent border-b border-gray-700 pb-1 focus:outline-none focus:border-primary text-sm">
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <h3 class="text-sm text-gray-400 mb-2">Output Format</h3>
+      <select class="w-full bg-dark text-white p-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary">
+        <option>React</option>
+        <option>React Native</option>
+        <option>HTML/CSS</option>
+        <option>Vue.js</option>
+        <option>Angular</option>
+      </select>
+    </div>
+
+    <div class="mb-4">
+      <h3 class="text-sm text-gray-400 mb-2">Styling Method</h3>
+      <select class="w-full bg-dark text-white p-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary">
+        <option>Tailwind CSS</option>
+        <option>CSS Modules</option>
+        <option>Styled Components</option>
+        <option>Inline Styles</option>
+        <option>SASS/SCSS</option>
+      </select>
+    </div>
+  </div>
+  <script src="./index.js"></script>
+  </body>
+</html>
