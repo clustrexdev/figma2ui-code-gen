@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-blue-50">
+    <div class="max-w-md mx-auto h-screen flex flex-col bg-blue-50 shadow-lg">
+        <!-- Header -->
+        <div class="bg-white p-4 flex items-center border-b">
+            <button class="mr-4 text-gray-600">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="flex-1">
+                <h1 class="font-semibold text-lg">Lori Most</h1>
+                <p class="text-xs text-green-500">Online</p>
+            </div>
+            <div class="w-10 h-10 rounded-full overflow-hidden">
+                <img src="https://placehold.co/100x100/e0a080/ffffff?text=LM" alt="Profile" class="w-full h-full object-cover">
+            </div>
+        </div>
+
+        <!-- Chat area with wavy background -->
+        <div class="flex-1 p-4 overflow-y-auto bg-blue-50 relative" id="chatContainer">
+            <!-- Wavy background pattern -->
+            <div class="absolute inset-0 z-0 opacity-30">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" class="w-full h-full">
+                    <path fill="#a2d9ff" fill-opacity="1" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                </svg>
+            </div>
+
+            <!-- Shared image message -->
+            <div class="flex justify-end mb-4 relative z-10">
+                <div class="max-w-[80%] bg-blue-500 rounded-lg p-1 text-white">
+                    <div class="rounded overflow-hidden">
+                        <img src="https://placehold.co/300x200/cccccc/333333?text=Documents+and+Calculator" alt="Shared image" class="w-full">
+                    </div>
+                    <div class="text-right text-xs text-blue-200 pr-2">09:20</div>
+                </div>
+            </div>
+
+            <!-- Time divider -->
+            <div class="flex justify-center mb-4 relative z-10">
+                <div class="bg-gray-300 rounded-full px-4 py-1 text-xs text-gray-700">Today</div>
+            </div>
+
+            <!-- Message from other person -->
+            <div class="flex mb-4 relative z-10">
+                <div class="max-w-[80%] bg-white rounded-lg p-3 shadow">
+                    <p>Good morning</p>
+                    <div class="text-right text-xs text-gray-500">09:20</div>
+                </div>
+            </div>
+
+            <!-- Message from user -->
+            <div class="flex justify-end mb-4 relative z-10">
+                <div class="max-w-[80%] bg-blue-500 rounded-lg p-3 text-white">
+                    <p>Good morning Lori</p>
+                    <div class="text-right text-xs text-blue-200">10:20 <i class="fas fa-check-double ml-1"></i></div>
+                </div>
+            </div>
+
+            <!-- Message from other person -->
+            <div class="flex mb-4 relative z-10">
+                <div class="max-w-[80%] bg-white rounded-lg p-3 shadow">
+                    <p>Can we meet tomorrow?</p>
+                    <div class="text-right text-xs text-gray-500">11:00</div>
+                </div>
+            </div>
+
+            <!-- Message from other person -->
+            <div class="flex mb-4 relative z-10">
+                <div class="max-w-[80%] bg-white rounded-lg p-3 shadow">
+                    <p>I have a new idea about our project. I think you'll be interested in new investment.</p>
+                    <div class="text-right text-xs text-gray-500">11:01</div>
+                </div>
+            </div>
+
+            <!-- Message from user -->
+            <div class="flex justify-end mb-4 relative z-10">
+                <div class="max-w-[80%] bg-blue-500 rounded-lg p-3 text-white">
+                    <p>Great idea! Let's meet tomorrow and discuss this 😊</p>
+                    <div class="text-right text-xs text-blue-200">11:10 <i class="fas fa-check-double ml-1"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message input area -->
+        <div class="bg-white p-4 flex items-center border-t">
+            <button class="text-gray-500 mr-4">
+                <i class="fas fa-plus text-xl"></i>
+            </button>
+            <div class="flex-1 bg-gray-100 rounded-full px-4 py-2 flex items-center">
+                <input type="text" placeholder="Type a message..." class="bg-transparent flex-1 focus:outline-none">
+                <button class="text-gray-500 ml-2">
+                    <i class="far fa-clock"></i>
+                </button>
+                <button class="text-gray-500 ml-2">
+                    <i class="fas fa-microphone"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to make the chat interface interactive
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.querySelector('input');
+            const chatContainer = document.getElementById('chatContainer');
+            
+            // Scroll to bottom of chat on load
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Add event listener for input field
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && input.value.trim() !== '') {
+                    // Create new message element
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'flex justify-end mb-4 relative z-10';
+                    
+                    const now = new Date();
+                    const hours = now.getHours().toString().padStart(2, '0');
+                    const minutes = now.getMinutes().toString().padStart(2, '0');
+                    const timeString = `${hours}:${minutes}`;
+                    
+                    messageDiv.innerHTML = `
+                        <div class="max-w-[80%] bg-blue-500 rounded-lg p-3 text-white">
+                            <p>${input.value}</p>
+                            <div class="text-right text-xs text-blue-200">${timeString} <i class="fas fa-check ml-1"></i></div>
+                        </div>
+                    `;
+                    
+                    chatContainer.appendChild(messageDiv);
+                    input.value = '';
+                    
+                    // Scroll to bottom after sending message
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    
+                    // Simulate reply after 1-2 seconds
+                    setTimeout(() => {
+                        const replyDiv = document.createElement('div');
+                        replyDiv.className = 'flex mb-4 relative z-10';
+                        
+                        const replies = [
+                            "Sure, I'll get back to you on that.",
+                            "Thanks for the message!",
+                            "I'll look into it and let you know.",
+                            "That sounds great!"
+                        ];
+                        
+                        const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                        
+                        replyDiv.innerHTML = `
+                            <div class="max-w-[80%] bg-white rounded-lg p-3 shadow">
+                                <p>${randomReply}</p>
+                                <div class="text-right text-xs text-gray-500">${timeString}</div>
+                            </div>
+                        `;
+                        
+                        chatContainer.appendChild(replyDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    }, 1000 + Math.random() * 1000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

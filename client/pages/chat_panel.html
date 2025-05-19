@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invest Club Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-purple-50">
+    <div class="max-w-md mx-auto bg-purple-50 h-screen flex flex-col">
+        <!-- Header -->
+        <div class="bg-white p-4 flex items-center justify-between shadow-sm">
+            <div class="flex items-center">
+                <button class="mr-4 text-gray-700">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="font-semibold text-lg">Invest club</span>
+                <span class="text-gray-400 text-sm ml-1">📊</span>
+            </div>
+            <div class="flex items-center">
+                <span class="text-gray-500 text-sm mr-2">11 members</span>
+                <div class="bg-orange-500 text-white rounded-full w-8 h-8 flex items-center justify-center">
+                    <span class="font-bold">in</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="flex-1 overflow-y-auto p-4" id="chatArea">
+            <!-- Purple message -->
+            <div class="flex justify-end mb-4">
+                <div class="bg-purple-600 text-white rounded-lg p-3 max-w-xs">
+                    <p>and human connection. We believe in the power of technology to build the kind of future we want to live in.</p>
+                    <div class="flex justify-end mt-1 text-xs text-purple-200">
+                        <span>11 19:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Purple message -->
+            <div class="flex justify-end mb-4">
+                <div class="bg-purple-600 text-white rounded-lg p-3 max-w-xs">
+                    <p>You are welcome</p>
+                    <div class="flex justify-end mt-1 text-xs text-purple-200">
+                        <span>10 19:01</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lori's message -->
+            <div class="flex mb-4">
+                <div class="w-10 h-10 rounded-full overflow-hidden mr-2 flex-shrink-0">
+                    <img src="https://placehold.co/100x100/4a4a4a/ffffff?text=LM" alt="Lori Most" class="w-full h-full object-cover">
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-orange-500 font-medium">Lori Most</span>
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <p>I have a new idea about our project. I think you'll be interested in new investment.</p>
+                    </div>
+                    <div class="flex mt-1 text-xs text-gray-500">
+                        <span>9 19:20</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date divider -->
+            <div class="flex justify-center my-4">
+                <div class="bg-purple-200 text-purple-800 rounded-full px-4 py-1 text-sm">
+                    Today
+                </div>
+            </div>
+
+            <!-- Shripriya's message -->
+            <div class="flex mb-4">
+                <div class="w-10 h-10 rounded-full overflow-hidden mr-2 flex-shrink-0">
+                    <img src="https://placehold.co/100x100/4a4a4a/ffffff?text=SM" alt="Shripriya Mahesh" class="w-full h-full object-cover">
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-green-500 font-medium">Shripriya Mahesh</span>
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <p>Great idea! Let's meet today and discuss this 😊</p>
+                    </div>
+                    <div class="flex mt-1 text-xs text-gray-500">
+                        <span>8 08:40</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marc's message -->
+            <div class="flex mb-4">
+                <div class="w-10 h-10 rounded-full overflow-hidden mr-2 flex-shrink-0">
+                    <img src="https://placehold.co/100x100/4a4a4a/ffffff?text=MT" alt="Marc Tarpenning" class="w-full h-full object-cover">
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-red-500 font-medium">Marc Tarpenning</span>
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <p>Great idea! Let's meet today and discuss this 😊</p>
+                    </div>
+                    <div class="flex mt-1 text-xs text-gray-500">
+                        <span>8 09:01</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Purple message -->
+            <div class="flex justify-end mb-4">
+                <div class="bg-purple-600 text-white rounded-lg p-3 max-w-xs">
+                    <p>Amazing</p>
+                    <div class="flex justify-end mt-1 text-xs text-purple-200">
+                        <span>3 09:02</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message Input -->
+        <div class="bg-white p-3 border-t border-gray-200 flex items-center">
+            <button class="text-gray-400 mr-2">
+                <i class="fas fa-plus"></i>
+            </button>
+            <input type="text" placeholder="Type a message..." class="flex-1 border-0 outline-none text-gray-600 bg-transparent" id="messageInput">
+            <button class="text-gray-400 mx-2">
+                <i class="far fa-clock"></i>
+            </button>
+            <button class="text-gray-400 ml-2">
+                <i class="fas fa-microphone"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('messageInput');
+            const chatArea = document.getElementById('chatArea');
+            
+            // Add event listener for sending messages
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && messageInput.value.trim() !== '') {
+                    // Create new message element
+                    const messageText = messageInput.value.trim();
+                    const currentTime = new Date();
+                    const hours = currentTime.getHours();
+                    const minutes = currentTime.getMinutes();
+                    const timeString = `${hours}:${minutes < 10 ? '0' + minutes : minutes}`;
+                    
+                    const messageHTML = `
+                        <div class="flex justify-end mb-4 animate-fade-in">
+                            <div class="bg-purple-600 text-white rounded-lg p-3 max-w-xs">
+                                <p>${messageText}</p>
+                                <div class="flex justify-end mt-1 text-xs text-purple-200">
+                                    <span>just now</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    chatArea.insertAdjacentHTML('beforeend', messageHTML);
+                    
+                    // Clear input and scroll to bottom
+                    messageInput.value = '';
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                    
+                    // Simulate response after a delay
+                    setTimeout(() => {
+                        const responses = [
+                            "That sounds interesting! Tell me more.",
+                            "I'm available for a meeting at 3 PM.",
+                            "Great point! I agree with your approach.",
+                            "Let's discuss this further in our next meeting.",
+                            "I've shared some resources in our shared folder."
+                        ];
+                        
+                        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                        const senders = [
+                            { name: "Lori Most", color: "orange", initials: "LM" },
+                            { name: "Shripriya Mahesh", color: "green", initials: "SM" },
+                            { name: "Marc Tarpenning", color: "red", initials: "MT" }
+                        ];
+                        
+                        const randomSender = senders[Math.floor(Math.random() * senders.length)];
+                        
+                        const responseHTML = `
+                            <div class="flex mb-4 animate-slide-in">
+                                <div class="w-10 h-10 rounded-full overflow-hidden mr-2 flex-shrink-0">
+                                    <img src="https://placehold.co/100x100/4a4a4a/ffffff?text=${randomSender.initials}" alt="${randomSender.name}" class="w-full h-full object-cover">
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-${randomSender.color}-500 font-medium">${randomSender.name}</span>
+                                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                                        <p>${randomResponse}</p>
+                                    </div>
+                                    <div class="flex mt-1 text-xs text-gray-500">
+                                        <span>just now</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        chatArea.insertAdjacentHTML('beforeend', responseHTML);
+                        chatArea.scrollTop = chatArea.scrollHeight;
+                    }, 1500);
+                }
+            });
+
+            // Add animation styles
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
+                @keyframes slideIn {
+                    from { opacity: 0; transform: translateX(-10px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+                
+                .animate-fade-in {
+                    animation: fadeIn 0.3s ease-out;
+                }
+                
+                .animate-slide-in {
+                    animation: slideIn 0.3s ease-out;
+                }
+                
+                .message-bubble:hover {
+                    transform: scale(1.02);
+                    transition: transform 0.2s;
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Add interactive typing indicator
+            messageInput.addEventListener('input', function() {
+                const typingIndicator = document.querySelector('.typing-indicator');
+                if (messageInput.value.trim() !== '' && !typingIndicator) {
+                    const indicatorHTML = `
+                        <div class="flex mb-4 typing-indicator">
+                            <div class="flex items-center text-xs text-gray-500 italic">
+                                <span class="mr-1">Someone is typing</span>
+                                <span class="typing-dots">...</span>
+                            </div>
+                        </div>
+                    `;
+                    chatArea.insertAdjacentHTML('beforeend', indicatorHTML);
+                    
+                    // Animate typing dots
+                    const typingDots = document.querySelector('.typing-dots');
+                    let dotCount = 0;
+                    const typingInterval = setInterval(() => {
+                        dotCount = (dotCount + 1) % 4;
+                        typingDots.textContent = '.'.repeat(dotCount || 3);
+                    }, 500);
+                    
+                    // Remove after a delay or when message is sent
+                    setTimeout(() => {
+                        const indicator = document.querySelector('.typing-indicator');
+                        if (indicator) {
+                            indicator.remove();
+                            clearInterval(typingInterval);
+                        }
+                    }, 3000);
+                }
+            });
+
+            // Add reaction functionality to messages
+            document.querySelectorAll('.bg-white.rounded-lg').forEach(message => {
+                message.addEventListener('dblclick', function() {
+                    const reactions = ['👍', '❤️', '😂', '😮', '👏'];
+                    const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
+                    
+                    if (!this.querySelector('.reaction-bubble')) {
+                        const reactionHTML = `
+                            <div class="reaction-bubble absolute -top-3 -right-2 bg-white rounded-full p-1 shadow-md animate-bounce">
+                                ${randomReaction}
+                            </div>
+                        `;
+                        this.style.position = 'relative';
+                        this.insertAdjacentHTML('beforeend', reactionHTML);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

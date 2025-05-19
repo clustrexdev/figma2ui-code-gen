@@ -27,7 +27,7 @@ if (extractedFrames.length === 0) {
         </div>
         <h3 className="text-xl font-semibold mb-2">No frames extracted</h3>
         <p className="text-gray-400 max-w-md mx-auto">
-        Go back to the Setup tab and enter a valid Figma URL to extract frames
+        Go back to the Setup tab and zenter a valid Figma URL to extract frames
         </p>
     </div>
     );

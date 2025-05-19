@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import { SetupTabProps, UIFramework, CSSFramework, UILibrary, CodeLanguage } from "../types";
 
 const SetupTab = ({

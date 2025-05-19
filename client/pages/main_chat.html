@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invest Club Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-purple-50">
+    <div class="max-w-md mx-auto bg-purple-50 h-screen flex flex-col">
+        <!-- Header -->
+        <div class="bg-white p-4 flex items-center justify-between border-b">
+            <div class="flex items-center">
+                <button class="mr-4 text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <div>
+                    <h1 class="font-bold text-lg">Invest club</h1>
+                    <p class="text-sm text-gray-500">11 members</p>
+                </div>
+            </div>
+            <div class="bg-orange-500 rounded-full w-10 h-10 flex items-center justify-center text-white font-bold">
+                in
+            </div>
+        </div>
+
+        <!-- Chat area -->
+        <div class="flex-1 p-4 overflow-y-auto" id="chatArea">
+            <!-- Purple message -->
+            <div class="flex justify-end mb-4">
+                <div class="bg-purple-600 text-white p-3 rounded-lg max-w-xs">
+                    <p>and human connection. We believe in the power of technology to build the kind of future we want to live in.</p>
+                    <div class="flex justify-end mt-1 text-xs text-purple-200">
+                        <span>11 19:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- You are welcome message -->
+            <div class="flex justify-end mb-4">
+                <div class="bg-purple-600 text-white p-3 rounded-lg">
+                    <p>You are welcome</p>
+                    <div class="flex justify-end mt-1 text-xs text-purple-200">
+                        <span>10 19:01</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lori Most message -->
+            <div class="flex mb-4">
+                <div class="w-10 h-10 rounded-full overflow-hidden mr-2">
+                    <img src="https://placehold.co/100x100/333/FFF?text=LM" alt="Lori Most" class="w-full h-full object-cover">
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-medium text-orange-500">Lori Most</span>
+                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                        <p>I have a new idea abour our project. I think you'll be interested in new investment.</p>
+                        <div class="flex justify-end mt-1 text-xs text-gray-400">
+                            <span>9 19:20</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today divider -->
+            <div class="flex items-center justify-center my-4">
+                <div class="bg-purple-200 text-purple-700 px-4 py-1 rounded-full text-sm">
+                    Today
+                </div>
+            </div>
+
+            <!-- Shripriya Mahesh message -->
+            <div class="flex mb-4">
+                <div class="w-10 h-10 rounded-full overflow-hidden mr-2">
+                    <img src="https://placehold.co/100x100/3CB371/FFF?text=SM" alt="Shripriya Mahesh" class="w-full h-full object-cover">
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-medium text-green-500">Shripriya Mahesh</span>
+                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                        <p>Great idea! Let's meet today and discuss this 😊</p>
+                        <div class="flex justify-end mt-1 text-xs text-gray-400">
+                            <span>8 08:40</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marc Tarpenning message -->
+            <div class="flex mb-4">
+                <div class="w-10 h-10 rounded-full overflow-hidden mr-2">
+                    <img src="https://placehold.co/100x100/4682B4/FFF?text=MT" alt="Marc Tarpenning" class="w-full h-full object-cover">
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-medium text-red-500">Marc Tarpenning</span>
+                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                        <p>Great idea! Let's meet today and discuss this 😊</p>
+                        <div class="flex justify-end mt-1 text-xs text-gray-400">
+                            <span>8 09:01</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Amazing message -->
+            <div class="flex justify-end mb-4">
+                <div class="bg-purple-600 text-white p-3 rounded-lg">
+                    <p>Amazing</p>
+                    <div class="flex justify-end mt-1 text-xs text-purple-200">
+                        <span>3 09:02</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message input -->
+        <div class="bg-white p-4 border-t flex items-center">
+            <button class="text-gray-400 mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+            </button>
+            <input type="text" id="messageInput" placeholder="Type a message..." class="flex-1 border-0 outline-none text-gray-600">
+            <button class="text-gray-400 mx-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </button>
+            <button class="text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Interactive functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('messageInput');
+            const chatArea = document.getElementById('chatArea');
+            
+            // Send message on Enter key
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && messageInput.value.trim() !== '') {
+                    // Create new message element
+                    const messageText = messageInput.value.trim();
+                    const currentTime = new Date();
+                    const timeString = `${currentTime.getHours()}:${String(currentTime.getMinutes()).padStart(2, '0')}`;
+                    
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'flex justify-end mb-4';
+                    messageDiv.innerHTML = `
+                        <div class="bg-purple-600 text-white p-3 rounded-lg">
+                            <p>${messageText}</p>
+                            <div class="flex justify-end mt-1 text-xs text-purple-200">
+                                <span>Just now</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    chatArea.appendChild(messageDiv);
+                    
+                    // Clear input and scroll to bottom
+                    messageInput.value = '';
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                    
+                    // Simulate response after a delay
+                    setTimeout(() => {
+                        simulateResponse();
+                    }, 1000);
+                }
+            });
+            
+            function simulateResponse() {
+                const responses = [
+                    "Sounds good! When should we meet?",
+                    "I agree with your proposal.",
+                    "Let me check my schedule and get back to you.",
+                    "That's an interesting perspective!",
+                    "I'll prepare some materials for our discussion."
+                ];
+                
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                const randomUser = Math.random() > 0.5 ? 
+                    {name: "Lori Most", color: "orange", initials: "LM", bgColor: "333"} : 
+                    {name: "Marc Tarpenning", color: "red", initials: "MT", bgColor: "4682B4"};
+                
+                const responseDiv = document.createElement('div');
+                responseDiv.className = 'flex mb-4';
+                responseDiv.innerHTML = `
+                    <div class="w-10 h-10 rounded-full overflow-hidden mr-2">
+                        <img src="https://placehold.co/100x100/${randomUser.bgColor}/FFF?text=${randomUser.initials}" alt="${randomUser.name}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-medium text-${randomUser.color}-500">${randomUser.name}</span>
+                        <div class="bg-white p-3 rounded-lg shadow-sm">
+                            <p>${randomResponse}</p>
+                            <div class="flex justify-end mt-1 text-xs text-gray-400">
+                                <span>Just now</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                chatArea.appendChild(responseDiv);
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+        });
+    </script>
+</body>
+</html>

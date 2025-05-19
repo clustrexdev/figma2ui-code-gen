@@ -13,75 +13,34 @@ exports.HelloWorldPanel = void 0;
 const vscode_1 = require("vscode");
 const getUri_1 = require("../utilities/getUri");
 const getNonce_1 = require("../utilities/getNonce");
+const file_system_1 = require("../utilities/file-system");
+const api_services_1 = require("../services/api-services");
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
-/**
- * This class manages the state and behavior of HelloWorld webview panels.
- *
- * It contains all the data and methods for:
- *
- * - Creating and rendering HelloWorld webview panels
- * - Properly cleaning up and disposing of webview resources when the panel is closed
- * - Setting the HTML (and by proxy CSS/JavaScript) content of the webview panel
- * - Setting message listeners so data can be passed between the webview and extension
- */
 class HelloWorldPanel {
-    /**
-     * The HelloWorldPanel class private constructor (called only from the render method).
-     *
-     * @param panel A reference to the webview panel
-     * @param extensionUri The URI of the directory containing the extension
-     */
     constructor(panel, extensionUri) {
         this._disposables = [];
         this._panel = panel;
-        // Set an event listener to listen for when the panel is disposed (i.e. when the user closes
-        // the panel or when the panel is closed programmatically)
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-        // Set the HTML content for the webview panel
         this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri);
-        // Set an event listener to listen for messages passed from the webview context
         this._setWebviewMessageListener(this._panel.webview);
     }
-    /**
-     * Renders the current webview panel if it exists otherwise a new webview panel
-     * will be created and displayed.
-     *
-     * @param extensionUri The URI of the directory containing the extension.
-     */
     static render(extensionUri) {
         if (HelloWorldPanel.currentPanel) {
-            // If the webview panel already exists reveal it
             HelloWorldPanel.currentPanel._panel.reveal(vscode_1.ViewColumn.One);
         }
         else {
-            // If a webview panel does not already exist create and show a new one
-            const panel = vscode_1.window.createWebviewPanel(
-            // Panel view type
-            "Fig2UI", 
-            // Panel title
-            "Fig2UI - Generate Code from Figma", 
-            // The editor column the panel should be displayed in
-            vscode_1.ViewColumn.One, 
-            // Extra panel configurations
-            {
-                // Enable JavaScript in the webview
+            const panel = vscode_1.window.createWebviewPanel("Fig2UI", "Fig2UI - Generate Code from Figma", vscode_1.ViewColumn.One, {
                 enableScripts: true,
-                // Restrict the webview to only load resources from the `out` and `webview-ui/build` directories
                 localResourceRoots: [vscode_1.Uri.joinPath(extensionUri, "out"), vscode_1.Uri.joinPath(extensionUri, "webview-ui/build")],
             });
             HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri);
         }
     }
-    /**
-     * Cleans up and disposes of webview resources when the webview panel is closed.
-     */
     dispose() {
         HelloWorldPanel.currentPanel = undefined;
-        // Dispose of the current webview panel
         this._panel.dispose();
-        // Dispose of all disposables (i.e. commands) for the current webview panel
         while (this._disposables.length) {
             const disposable = this._disposables.pop();
             if (disposable) {
@@ -89,28 +48,15 @@ class HelloWorldPanel {
             }
         }
     }
-    /**
-     * Defines and returns the HTML that should be rendered within the webview panel.
-     *
-     * @remarks This is also the place where references to the React webview build files
-     * are created and inserted into the webview HTML.
-     *
-     * @param webview A reference to the extension webview
-     * @param extensionUri The URI of the directory containing the extension
-     * @returns A template string literal containing the HTML that should be
-     * rendered within the webview panel
-     */
     _getWebviewContent(webview, extensionUri) {
-        // The CSS file from the React build output
         const stylesUri = (0, getUri_1.getUri)(webview, extensionUri, ["webview-ui", "build", "assets", "index.css"]);
-        // The JS file from the React build output
         const scriptUri = (0, getUri_1.getUri)(webview, extensionUri, ["webview-ui", "build", "assets", "index.js"]);
         const nonce = (0, getNonce_1.getNonce)();
         const connectSrc = [
             'https://kdwi5u76mk.execute-api.ap-south-1.amazonaws.com/v1/extract_assets_from_figma',
-            'https://jwyvhgpyn7.execute-api.ap-south-1.amazonaws.com/v1/get_nodes_in_files'
+            'https://jwyvhgpyn7.execute-api.ap-south-1.amazonaws.com/v1/get_nodes_in_files',
+            'http://127.0.0.1:5000' // Add your API endpoint here
         ].join(' ');
-        // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
         return /*html*/ `
       <!DOCTYPE html>
       <html lang="en">
@@ -137,27 +83,23 @@ class HelloWorldPanel {
       </html>
     `;
     }
-    /**
-     * Sets up an event listener to listen for messages passed from the webview context and
-     * executes code based on the message that is recieved.
-     *
-     * @param webview A reference to the extension webview
-     * @param context A reference to the extension context
-     */
     _setWebviewMessageListener(webview) {
-        webview.onDidReceiveMessage((message) => {
+        webview.onDidReceiveMessage((message) => __awaiter(this, void 0, void 0, function* () {
             const command = message.command;
             const text = message.text;
-            const data = message.data;
+            const placeholderCode = message.placeholderCode;
+            const language = message.language;
+            const uiFramework = message.uiFramework;
+            const fileName = message.fileName;
+            const folderName = message.folderName;
             switch (command) {
-                case "hello":
+                case "showInfoMessage":
                     vscode_1.window.showInformationMessage(text);
                     return;
                 case "showError":
                     vscode_1.window.showErrorMessage(text);
                     return;
                 case "getWorkspacePath":
-                    // Get workspace path and send it back to webview
                     const workspaceFolders = vscode_1.workspace.workspaceFolders;
                     const rootPath = workspaceFolders && workspaceFolders.length > 0
                         ? workspaceFolders[0].uri.fsPath
@@ -168,7 +110,6 @@ class HelloWorldPanel {
                     });
                     return;
                 case "saveAssets":
-                    // Save assets to the specified path
                     this._saveAssets(webview, message.assets, message.savePath, message.frameId)
                         .then(() => {
                         webview.postMessage({
@@ -184,8 +125,88 @@ class HelloWorldPanel {
                         });
                     });
                     return;
+                case "fetchFigmaDesign":
+                    // When user submits Figma URL and tech stack choices
+                    webview.postMessage({
+                        command: "figmaDesignFetched",
+                        success: true,
+                        message: "Figma design frames extracted successfully"
+                    });
+                    return;
+                case "generateHtml":
+                    vscode_1.window.showInformationMessage(text);
+                    (0, file_system_1.handleApply)({
+                        fileName, folderName, language, placeholderCode, uiFramework
+                    });
+                    return;
+                case "generateCode":
+                    // Handle code generation request
+                    try {
+                        vscode_1.window.showInformationMessage(`Generating code for ${message.frameId} using ${message.settings.uiFramework}...`);
+                        // Get workspace path
+                        const workspaceFolders = vscode_1.workspace.workspaceFolders;
+                        const rootPath = workspaceFolders && workspaceFolders.length > 0
+                            ? workspaceFolders[0].uri.fsPath
+                            : "";
+                        if (!rootPath) {
+                            throw new Error("No workspace folder is open. Please open a folder first.");
+                        }
+                        // Generate code based on the UI framework
+                        let generatedCode = '';
+                        const { uiFramework, cssFramework, uiLibrary, language } = message.settings;
+                        const frameUrl = message.frameUrl || ""; // Frame URL (image URL)
+                        const prompt = message.prompt;
+                        const fileName = message.fileName;
+                        const folderName = message.folderName || null;
+                        if (uiFramework === 'html') {
+                            // Use the HTML-specific API
+                            generatedCode = yield (0, api_services_1.generateHTMLCode)({
+                                url: frameUrl,
+                                frameId: message.frameId,
+                                prompt: prompt
+                            });
+                        }
+                        else {
+                            // Use the generic code generation API
+                            generatedCode = yield (0, api_services_1.generateCode)({
+                                url: frameUrl,
+                                frameId: message.frameId,
+                                prompt: prompt,
+                                uiFramework: uiFramework,
+                                cssFramework: cssFramework,
+                                uiLibrary: uiLibrary,
+                                language: language
+                            });
+                        }
+                        // Add appropriate file extension if not present
+                        let finalFileName = fileName;
+                        const fileExt = (0, file_system_1.getFileExtension)(uiFramework, language);
+                        if (!fileName.endsWith(fileExt)) {
+                            finalFileName = `${fileName}${fileExt}`;
+                        }
+                        // Save the generated code to a file
+                        const filePath = yield (0, file_system_1.saveCodeToFile)(generatedCode, finalFileName, folderName, rootPath);
+                        // Send success message back to webview
+                        webview.postMessage({
+                            command: "codeGenerated",
+                            success: true,
+                            filePath: filePath,
+                            message: `Code successfully generated and saved to ${filePath}`
+                        });
+                    }
+                    catch (error) {
+                        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+                        vscode_1.window.showErrorMessage(`Failed to generate code: ${errorMessage}`);
+                        // Send error message back to webview
+                        webview.postMessage({
+                            command: "codeGenerated",
+                            success: false,
+                            error: errorMessage
+                        });
+                    }
+                    return;
             }
-        }, undefined, this._disposables);
+        }), undefined, this._disposables);
     }
     // Helper method to save assets
     _saveAssets(webview, assets, savePath, frameId) {
@@ -230,7 +251,7 @@ class HelloWorldPanel {
                     assets: assets.map(asset => ({
                         id: asset.id,
                         name: asset.name,
-                        fileName: `${asset.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`
+                        filePath: path.join(savePath, `${asset.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`)
                     })),
                     savedAt: new Date().toISOString()
                 };

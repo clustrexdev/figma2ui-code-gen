@@ -1,158 +1,202 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
+import { Clipboard, Check, X, Download } from 'lucide-react';
 import { GenerateTabProps } from '../types';
+import { GenerateHtmlCode } from '../api/genegrator';
+import { vscode } from '../utilities/vscode';
 
-const GenerateTab: React.FC<GenerateTabProps> = ({
-selectedFrame,
-uiFramework,
-cssFramework,
-uiLibrary,
-language,
-prompt,
-setPrompt,
-fileName,
-setFileName,
-isProcessing,
-handleGenerateCode
-}) => {
-// Helper function to render the framework icon
-const renderFrameworkIcon = (framework: string) => {
-    switch (framework) {
-    case 'react':
-        return '⚛️';
-    case 'nextjs':
-        return '▲';
-    case 'svelte':
-        return '🔥';
-    case 'react-native':
-        return '📱';
-    default:
-        return '🌐';
+export default function GenerateTab({
+    cssFramework, fileName, folderName, handleGenerateCode, isProcessing, language, prompt, selectedFrame, setFileName, setFolderName, setPrompt, uiFramework, uiLibrary
+} : GenerateTabProps) {
+    const [isLoading, setIsLoading] = useState(false);
+    const [copied, setCopied] = useState(false);
+
+    const [placeholderCode, setplaceholderCode] = useState<string | null>(null);
+
+    const generateCode = async () => {
+        try {
+            setIsLoading(true);
+            const response = await GenerateHtmlCode({
+                url : selectedFrame.thumbnail, cssFramework : cssFramework, fileName : fileName, folderName : folderName, language : language, prompt : prompt
+            });
+
+            console.log("Html Code: ", response);
+            
+            const htmlCode = JSON.parse(response?.body);
+            setplaceholderCode(htmlCode);
+        } catch (error) {
+            return;
+        } finally {
+            setIsLoading(false);
+        }
     }
-};
+
+    // Handle copy to clipboard
+    const handleCopy = () => {
+        if (placeholderCode) {
+            navigator.clipboard.writeText(placeholderCode);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
+
+    // Handle apply code action
+    const handleApply = () => {
+        console.log('Applying code:', placeholderCode);
+        // In a real app, this would apply the generated code to your project
+        vscode.postMessage({
+            command : "generateHtml",
+            text : "Html has been generated successfully",
+            fileName, folderName, language, placeholderCode, uiFramework
+        });
+    };
+
+    // Handle discard code action
+    const handleDiscard = () => {
+        console.log('Discarding code');
+        // In a real app, this would discard the generated code
+    };
 
 return (
-    <div className="flex flex-col h-full">
-    <div className="mb-6">
+    <div className="flex flex-col lg:flex-row h-screen bg-dark text-white">
+    {/* Left Column - Controls */}
+    <div className="lg:w-1/2 p-6 overflow-y-auto border-r border-gray-700">
+        <div className="mb-6">
         <h2 className="text-xl font-bold">Generate Code</h2>
         <p className="text-gray-400 text-sm mt-1">
-        Create code from the selected frame with AI assistance
+            Create code from the selected frame with AI assistance
         </p>
-    </div>
+        </div>
 
-    {/* Frame summary */}
-    <div className="bg-gray-800 p-4 rounded mb-6">
+        {/* Frame summary */}
+        <div className="bg-dark-green p-4 rounded mb-6">
         <div className="flex items-start">
-        <img
-            src={selectedFrame.thumbnail}
-            alt={selectedFrame.name}
-            className="w-16 h-16 object-cover rounded"
-        />
-        <div className="ml-4">
-            <h3 className="font-medium">{selectedFrame.name}</h3>
+            <div className="w-16 h-16 bg-gray-700 rounded flex items-center justify-center">
+            <img src={selectedFrame.thumbnail} alt={selectedFrame.name} className='h-full object-cover w-full' />
+            </div>
+            <div className="ml-4">
+            <h3 className="font-medium">Login Form</h3>
             <p className="text-gray-400 text-sm mt-1">
-            Output: {fileName || "unnamed"}.{language === 'typescript' ? 'tsx' : 'jsx'}
+                Output: {fileName}
             </p>
             <div className="flex items-center mt-2 text-sm text-gray-400 space-x-3">
-            <span>{renderFrameworkIcon(uiFramework)} {uiFramework}</span>
-            <span>•</span>
-            <span>{cssFramework}</span>
-            {uiLibrary !== 'none' && (
-                <>
+                <span>⚛️ {uiFramework}</span>
                 <span>•</span>
-                <span>{uiLibrary}</span>
-                </>
-            )}
+                <span>{cssFramework}</span>
+            </div>
             </div>
         </div>
         </div>
-    </div>
 
-    {/* File name input */}
-    <div className="mb-4">
-        <label htmlFor="fileName" className="block text-sm font-medium mb-1">
-        File Name
+        {/* Folder name input */}
+        <div className="mb-4">
+        <label htmlFor="folderName" className="block text-sm font-medium mb-1">
+            Folder Name
         </label>
         <input
-        id="fileName"
-        type="text"
-        value={fileName}
-        onChange={(e) => setFileName(e.target.value)}
-        placeholder="Enter file name"
-        className="w-full p-2 bg-gray-800 border border-gray-700 rounded text-white"
+            id="folderName"
+            type="text"
+            value={folderName}
+            onChange={(e) => setFolderName(e.target.value)}
+            placeholder="Enter folder name (optional)"
+            className="w-full p-2 bg-gray-800 border border-gray-700 rounded text-white"
         />
         <p className="text-gray-400 text-xs mt-1">
-        Final path: /components/{fileName || "Component"}.{language === 'typescript' ? 'tsx' : 'jsx'}
+            Final path: {folderName ? `/${folderName}/` : '/'}{fileName}
         </p>
-    </div>
+        </div>
 
-    {/* Prompt textarea */}
-    <div className="mb-4 flex-1">
-        <label htmlFor="prompt" className="block text-sm font-medium mb-1">
-        Prompt
+        {/* File name input */}
+        <div className="mb-4">
+        <label htmlFor="fileName" className="block text-sm font-medium mb-1">
+            File Name
         </label>
-        <div className="relative h-full flex flex-col">
-        <textarea
+        <input
+            id="fileName"
+            type="text"
+            value={fileName}
+            onChange={(e) => setFileName(e.target.value)}
+            placeholder="Enter file name"
+            className="w-full p-2 bg-gray-800 border border-gray-700 rounded text-white"
+        />
+        </div>
+
+        {/* Prompt textarea */}
+        <div className="mb-4">
+        <label htmlFor="prompt" className="block text-sm font-medium mb-1">
+            Prompt
+        </label>
+        <div className="relative">
+            <textarea
             id="prompt"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder={`Describe what you want to generate from this frame.\n\nExample: "Create a responsive ${uiFramework} component that matches this login form design. Include form validation for the email field and password requirements."`}
-            className="w-full p-3 bg-gray-800 border border-gray-700 rounded text-white h-64 resize-none"
-        />
-        <div className="absolute bottom-3 right-3 text-xs text-gray-400">
-            {prompt.length} characters
+            placeholder="Create a responsive React component that matches this login form design. Include form validation for the email field and password requirements."
+            className="w-full p-3 bg-gray-800 border border-gray-700 rounded text-white h-40 resize-none"
+            />
         </div>
         </div>
-    </div>
 
-    {/* Prompt suggestions */}
-    <div className="mb-6">
-        <h4 className="text-sm font-medium mb-2">Prompt Suggestions</h4>
-        <div className="flex flex-wrap gap-2">
-        {[
-            "Create a pixel-perfect implementation",
-            "Make it responsive",
-            "Add form validation",
-            "Handle loading states",
-            "Add animations"
-        ].map((suggestion, index) => (
-            <button
-            key={index}
-            className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-full text-sm"
-            onClick={() => setPrompt(prompt ? `${prompt}\n${suggestion}` : suggestion)}
-            >
-            {suggestion}
-            </button>
-        ))}
-        </div>
-    </div>
-
-    {/* Generate button */}
-    <div className="mt-auto">
+        {/* Generate button */}
+        <div className="mt-6">
         <button
-        onClick={handleGenerateCode}
-        disabled={isProcessing || !prompt || !fileName}
-        className={`w-full py-3 rounded font-medium flex items-center justify-center ${
-            isProcessing || !prompt || !fileName
-            ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-            : 'bg-blue-600 hover:bg-blue-700 text-white'
-        }`}
+            onClick={generateCode}
+            className="w-full py-3 rounded font-medium flex items-center justify-center bg-green-500 hover:bg-green-600 text-white"
         >
-        {isProcessing ? (
-            <>
-            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Generating...
-            </>
-        ) : 'Generate Code'}
+            Generate Code
         </button>
-        <p className="text-center text-xs text-gray-400 mt-2">
-        The generated code will be placed in your project directory
-        </p>
+        </div>
+    </div>
+
+    {/* Right Column - Code Display */}
+    <div className="lg:w-1/2 p-6 overflow-hidden flex flex-col">
+        <div className="flex justify-between items-center mb-4">
+        <div>
+            <h2 className="text-xl font-bold">Generated Code</h2>
+            <p className="text-gray-400 text-sm">{fileName}</p>
+        </div>
+        <div className="flex space-x-2">
+            <button 
+            onClick={handleCopy}
+            className="p-2 bg-gray-800 hover:bg-gray-700 rounded"
+            title="Copy code"
+            >
+            {copied ? <Check size={18} /> : <Clipboard size={18} />}
+            </button>
+            <button 
+            onClick={handleApply}
+            className="p-2 bg-green-700 hover:bg-green-600 rounded"
+            title="Apply code"
+            >
+            <Download size={18} />
+            </button>
+            <button 
+            onClick={handleDiscard}
+            className="p-2 bg-red-700 hover:bg-red-600 rounded"
+            title="Discard code"
+            >
+            <X size={18} />
+            </button>
+        </div>
+        </div>
+
+        {/* Code display area with syntax highlighting */}
+        <div className="flex-1 bg-gray-800 rounded-lg overflow-hidden flex flex-col">
+        {isLoading ? (
+            <div className="flex-1 flex items-center justify-center">
+            <div className="flex flex-col items-center">
+                <div className="w-10 h-10 border-t-2 border-blue-500 rounded-full animate-spin"></div>
+                <p className="mt-4 text-gray-400">Generating code...</p>
+            </div>
+            </div>
+        ) : (
+            <div className="flex-1 overflow-auto">
+            <pre className="p-4 text-sm font-mono text-gray-300 whitespace-pre-wrap">
+                {placeholderCode}
+            </pre>
+            </div>
+        )}
+        </div>
     </div>
     </div>
 );
-};
-
-export default GenerateTab;
+}

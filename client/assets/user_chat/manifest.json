@@ -1,0 +1,26 @@
+{
+  "frameId": "2:2503",
+  "assets": [
+    {
+      "id": "04e77a86a8f6d00b0042ecad8797dd02745d6180",
+      "name": "04e77a86a8f6d00b0042ecad8797dd02745d6180",
+      "filePath": "/home/clustrex/Projects/figma2ui-code-gen/client/assets/user_chat/04e77a86a8f6d00b0042ecad8797dd02745d6180.png"
+    },
+    {
+      "id": "2e999bf779e5ac51c14a32cc62f9c405d92835c7",
+      "name": "2e999bf779e5ac51c14a32cc62f9c405d92835c7",
+      "filePath": "/home/clustrex/Projects/figma2ui-code-gen/client/assets/user_chat/2e999bf779e5ac51c14a32cc62f9c405d92835c7.png"
+    },
+    {
+      "id": "7a5825c300569d82ca8e511be5f91e1a7d4e297a",
+      "name": "7a5825c300569d82ca8e511be5f91e1a7d4e297a",
+      "filePath": "/home/clustrex/Projects/figma2ui-code-gen/client/assets/user_chat/7a5825c300569d82ca8e511be5f91e1a7d4e297a.png"
+    },
+    {
+      "id": "7a0afa04d132882b7074451ba69421ba855f986f",
+      "name": "7a0afa04d132882b7074451ba69421ba855f986f",
+      "filePath": "/home/clustrex/Projects/figma2ui-code-gen/client/assets/user_chat/7a0afa04d132882b7074451ba69421ba855f986f.png"
+    }
+  ],
+  "savedAt": "2025-05-17T07:20:34.462Z"
+}

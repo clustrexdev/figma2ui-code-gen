@@ -128,29 +128,7 @@ const PreviewTab: React.FC<PreviewTabProps> = ({
     return (
         <div className="flex h-full">
             {/* Sidebar with assets */}
-            <div className="w-64 border-r border-gray-700 pr-4 flex flex-col gap-5 overflow-y-auto h-screen">
-                <main>
-                    <h3 className="text-lg font-semibold mb-4">Frame</h3>
-                    
-                    <div className="space-y-4">
-                        <div 
-                            key={selectedFrame.id}
-                            className={`p-2 border rounded cursor-pointer ${
-                                selectedAsset === selectedFrame.id ? 'border-blue-500 bg-blue-900/20' : 'border-gray-700 hover:bg-gray-800'
-                            }`}
-                            onClick={() => setSelectedAsset(selectedFrame.id)}
-                        >
-                            <div className="flex items-center">
-                                <img 
-                                    src={selectedFrame.thumbnail} 
-                                    alt={selectedFrame.name} 
-                                    className="w-10 h-10 object-cover rounded"
-                                />
-                                <span className="ml-2 text-sm">{selectedFrame.name}</span>
-                            </div>
-                        </div>
-                    </div>
-                </main>
+            <div className="w-64 border-r border-gray-700 pr-4 flex flex-col justify-start items-start gap-5 overflow-y-auto h-full">
                 <main>
                     <h3 className="text-lg font-semibold mb-4">Frame Assets</h3>
                     
@@ -159,7 +137,7 @@ const PreviewTab: React.FC<PreviewTabProps> = ({
                             {assets.map((asset) => (
                                 <div 
                                     key={asset.id}
-                                    className={`p-2 border rounded cursor-pointer ${
+                                    className={`p-2 border rounded cursor-pointer w-58 ${
                                         selectedAsset === asset.id ? 'border-blue-500 bg-blue-900/20' : 'border-gray-700 hover:bg-gray-800'
                                     }`}
                                     onClick={() => setSelectedAsset(asset.id)}
@@ -170,7 +148,7 @@ const PreviewTab: React.FC<PreviewTabProps> = ({
                                             alt={asset.name} 
                                             className="w-10 h-10 object-cover rounded"
                                         />
-                                        <span className="ml-2 text-sm">{asset.name}</span>
+                                        <span className="ml-2 text-sm line-clamp-1 overflow-ellipsis">{asset.name}</span>
                                     </div>
                                 </div>
                             ))}

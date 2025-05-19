@@ -61,18 +61,22 @@ figmaUrl : string;
 }
 
 // Generate tab props
+// Additional prop to add to GenerateTabProps in types.ts
+
 export interface GenerateTabProps {
-selectedFrame: Frame;
-uiFramework: UIFramework;
-cssFramework: CSSFramework;
-uiLibrary: UILibrary;
-language: CodeLanguage;
-prompt: string;
-setPrompt: (prompt: string) => void;
-fileName: string;
-setFileName: (name: string) => void;
-isProcessing: boolean;
-handleGenerateCode: () => void;
+    selectedFrame: Frame;
+    uiFramework: UIFramework;
+    cssFramework: CSSFramework;
+    uiLibrary: UILibrary;
+    language: CodeLanguage;
+    prompt: string;
+    setPrompt: React.Dispatch<React.SetStateAction<string>>;
+    fileName: string;
+    setFileName: React.Dispatch<React.SetStateAction<string>>;
+    folderName: string; // Add this
+    setFolderName: React.Dispatch<React.SetStateAction<string>>; // Add this
+    isProcessing: boolean;
+    handleGenerateCode: () => void;
 }
 
 // Link tab props

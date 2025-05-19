@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Card</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-lg shadow-md max-w-md w-full overflow-hidden">
+        <div class="flex items-start p-4">
+            <!-- Profile section -->
+            <div class="flex-1">
+                <div class="flex items-center">
+                    <div class="mr-3">
+                        <img src="https://placehold.co/60x60/gray/white" alt="Profile" class="rounded-full w-12 h-12">
+                    </div>
+                    <div>
+                        <div class="flex items-center">
+                            <h3 class="font-bold text-lg">Profile Name</h3>
+                            <svg class="w-4 h-4 ml-1 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <p class="text-gray-500 text-sm">Professional title and description</p>
+                    </div>
+                </div>
+                
+                <!-- Content section -->
+                <div class="mt-3">
+                    <div class="relative">
+                        <div class="bg-gray-100 rounded-lg overflow-hidden">
+                            <img src="https://placehold.co/600x300/gray/white" alt="Content" class="w-full h-auto">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <button class="bg-white bg-opacity-75 rounded-full p-3">
+                                    <svg class="w-8 h-8 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right side image -->
+            <div class="ml-2">
+                <img src="https://placehold.co/120x120/gray/white" alt="Additional content" class="rounded-lg w-24 h-24 object-cover">
+            </div>
+        </div>
+        
+        <!-- Footer section -->
+        <div class="px-4 py-3 border-t flex items-center justify-between">
+            <div class="flex items-center text-gray-500">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-sm">8 matches</span>
+            </div>
+            <button class="bg-purple-100 text-purple-600 px-4 py-1 rounded-full text-sm font-medium">FOLLOW</button>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js functionality can be added here if needed
+        // For example:
+        /*
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('myChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                        datasets: [{
+                            label: '# of Votes',
+                            data: [12, 19, 3, 5, 2, 3],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        */
+    </script>
+</body>
+</html>

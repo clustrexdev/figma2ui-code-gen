@@ -1,69 +1,34 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, workspace } from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
+import { saveCodeToFile, getFileExtension, handleApply } from "../utilities/file-system";
+import { generateCode, generateHTMLCode } from "../services/api-services";
 import * as fs from 'fs';
 import * as path from 'path';
 import * as https from 'https';
 
-/**
- * This class manages the state and behavior of HelloWorld webview panels.
- *
- * It contains all the data and methods for:
- *
- * - Creating and rendering HelloWorld webview panels
- * - Properly cleaning up and disposing of webview resources when the panel is closed
- * - Setting the HTML (and by proxy CSS/JavaScript) content of the webview panel
- * - Setting message listeners so data can be passed between the webview and extension
- */
 export class HelloWorldPanel {
   public static currentPanel: HelloWorldPanel | undefined;
   private readonly _panel: WebviewPanel;
   private _disposables: Disposable[] = [];
 
-  /**
-   * The HelloWorldPanel class private constructor (called only from the render method).
-   *
-   * @param panel A reference to the webview panel
-   * @param extensionUri The URI of the directory containing the extension
-   */
   private constructor(panel: WebviewPanel, extensionUri: Uri) {
     this._panel = panel;
-
-    // Set an event listener to listen for when the panel is disposed (i.e. when the user closes
-    // the panel or when the panel is closed programmatically)
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-
-    // Set the HTML content for the webview panel
     this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri);
-
-    // Set an event listener to listen for messages passed from the webview context
     this._setWebviewMessageListener(this._panel.webview);
   }
 
-  /**
-   * Renders the current webview panel if it exists otherwise a new webview panel
-   * will be created and displayed.
-   *
-   * @param extensionUri The URI of the directory containing the extension.
-   */
   public static render(extensionUri: Uri) {
     if (HelloWorldPanel.currentPanel) {
-      // If the webview panel already exists reveal it
       HelloWorldPanel.currentPanel._panel.reveal(ViewColumn.One);
     } else {
-      // If a webview panel does not already exist create and show a new one
       const panel = window.createWebviewPanel(
-        // Panel view type
         "Fig2UI",
-        // Panel title
         "Fig2UI - Generate Code from Figma",
-        // The editor column the panel should be displayed in
         ViewColumn.One,
-        // Extra panel configurations
         {
-          // Enable JavaScript in the webview
           enableScripts: true,
-          // Restrict the webview to only load resources from the `out` and `webview-ui/build` directories
           localResourceRoots: [Uri.joinPath(extensionUri, "out"), Uri.joinPath(extensionUri, "webview-ui/build")],
         }
       );
@@ -72,16 +37,10 @@ export class HelloWorldPanel {
     }
   }
 
-  /**
-   * Cleans up and disposes of webview resources when the webview panel is closed.
-   */
   public dispose() {
     HelloWorldPanel.currentPanel = undefined;
-
-    // Dispose of the current webview panel
     this._panel.dispose();
 
-    // Dispose of all disposables (i.e. commands) for the current webview panel
     while (this._disposables.length) {
       const disposable = this._disposables.pop();
       if (disposable) {
@@ -90,31 +49,17 @@ export class HelloWorldPanel {
     }
   }
 
-  /**
-   * Defines and returns the HTML that should be rendered within the webview panel.
-   *
-   * @remarks This is also the place where references to the React webview build files
-   * are created and inserted into the webview HTML.
-   *
-   * @param webview A reference to the extension webview
-   * @param extensionUri The URI of the directory containing the extension
-   * @returns A template string literal containing the HTML that should be
-   * rendered within the webview panel
-   */
   private _getWebviewContent(webview: Webview, extensionUri: Uri) {
-    // The CSS file from the React build output
     const stylesUri = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "index.css"]);
-    // The JS file from the React build output
     const scriptUri = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "index.js"]);
-
     const nonce = getNonce();
 
     const connectSrc = [
       'https://kdwi5u76mk.execute-api.ap-south-1.amazonaws.com/v1/extract_assets_from_figma',
-      'https://jwyvhgpyn7.execute-api.ap-south-1.amazonaws.com/v1/get_nodes_in_files'
+      'https://jwyvhgpyn7.execute-api.ap-south-1.amazonaws.com/v1/get_nodes_in_files',
+      'http://127.0.0.1:5000' // Add your API endpoint here
     ].join(' ');
 
-    // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
     return /*html*/ `
       <!DOCTYPE html>
       <html lang="en">
@@ -142,23 +87,19 @@ export class HelloWorldPanel {
     `;
   }
 
-  /**
-   * Sets up an event listener to listen for messages passed from the webview context and
-   * executes code based on the message that is recieved.
-   *
-   * @param webview A reference to the extension webview
-   * @param context A reference to the extension context
-   */
-  
   private _setWebviewMessageListener(webview: Webview) {
     webview.onDidReceiveMessage(
-      (message: any) => {
+      async (message: any) => {
         const command = message.command;
         const text = message.text;
-        const data = message.data;
+        const placeholderCode = message.placeholderCode;
+        const language = message.language;
+        const uiFramework = message.uiFramework;
+        const fileName = message.fileName;
+        const folderName = message.folderName;
         
         switch (command) {
-          case "hello":
+          case "showInfoMessage":
             window.showInformationMessage(text);
             return;
             
@@ -167,7 +108,6 @@ export class HelloWorldPanel {
             return;
             
           case "getWorkspacePath":
-            // Get workspace path and send it back to webview
             const workspaceFolders = workspace.workspaceFolders;
             const rootPath = workspaceFolders && workspaceFolders.length > 0 
               ? workspaceFolders[0].uri.fsPath 
@@ -180,7 +120,6 @@ export class HelloWorldPanel {
             return;
             
           case "saveAssets":
-            // Save assets to the specified path
             this._saveAssets(webview, message.assets, message.savePath, message.frameId)
               .then(() => {
                 webview.postMessage({
@@ -195,6 +134,101 @@ export class HelloWorldPanel {
                   error: error.message
                 });
               });
+            return;
+
+          case "fetchFigmaDesign":
+            // When user submits Figma URL and tech stack choices
+            webview.postMessage({
+              command: "figmaDesignFetched",
+              success: true,
+              message: "Figma design frames extracted successfully"
+            });
+            return;
+          
+          case "generateHtml":
+            window.showInformationMessage(text);
+            handleApply({
+              fileName, folderName, language, placeholderCode, uiFramework
+            });
+            return;
+
+          case "generateCode":
+            // Handle code generation request
+            try {
+              window.showInformationMessage(`Generating code for ${message.frameId} using ${message.settings.uiFramework}...`);
+              
+              // Get workspace path
+              const workspaceFolders = workspace.workspaceFolders;
+              const rootPath = workspaceFolders && workspaceFolders.length > 0 
+                ? workspaceFolders[0].uri.fsPath 
+                : "";
+              
+              if (!rootPath) {
+                throw new Error("No workspace folder is open. Please open a folder first.");
+              }
+              
+              // Generate code based on the UI framework
+              let generatedCode = '';
+              const { uiFramework, cssFramework, uiLibrary, language } = message.settings;
+              const frameUrl = message.frameUrl || ""; // Frame URL (image URL)
+              const prompt = message.prompt;
+              const fileName = message.fileName;
+              const folderName = message.folderName || null;
+              
+              if (uiFramework === 'html') {
+                // Use the HTML-specific API
+                generatedCode = await generateHTMLCode({
+                  url: frameUrl,
+                  frameId: message.frameId,
+                  prompt: prompt
+                });
+              } else {
+                // Use the generic code generation API
+                generatedCode = await generateCode({
+                  url: frameUrl,
+                  frameId: message.frameId,
+                  prompt: prompt,
+                  uiFramework: uiFramework,
+                  cssFramework: cssFramework,
+                  uiLibrary: uiLibrary,
+                  language: language
+                });
+              }
+              
+              // Add appropriate file extension if not present
+              let finalFileName = fileName;
+              const fileExt = getFileExtension(uiFramework, language);
+              if (!fileName.endsWith(fileExt)) {
+                finalFileName = `${fileName}${fileExt}`;
+              }
+              
+              // Save the generated code to a file
+              const filePath = await saveCodeToFile(
+                generatedCode,
+                finalFileName,
+                folderName,
+                rootPath
+              );
+              
+              // Send success message back to webview
+              webview.postMessage({
+                command: "codeGenerated",
+                success: true,
+                filePath: filePath,
+                message: `Code successfully generated and saved to ${filePath}`
+              });
+              
+            } catch (error) {
+              const errorMessage = error instanceof Error ? error.message : "Unknown error";
+              window.showErrorMessage(`Failed to generate code: ${errorMessage}`);
+              
+              // Send error message back to webview
+              webview.postMessage({
+                command: "codeGenerated",
+                success: false,
+                error: errorMessage
+              });
+            }
             return;
         }
       },
@@ -211,8 +245,7 @@ export class HelloWorldPanel {
     frameId: string
   ): Promise<void> {
     try {
-
-        // Ensure directory exists
+      // Ensure directory exists
       if (!fs.existsSync(savePath)) {
         fs.mkdirSync(savePath, { recursive: true });
       }
@@ -258,7 +291,7 @@ export class HelloWorldPanel {
         assets: assets.map(asset => ({
           id: asset.id,
           name: asset.name,
-          fileName: `${asset.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`
+          filePath : path.join(savePath, `${asset.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`)
         })),
         savedAt: new Date().toISOString()
       };

@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  linker_service:
+    build: 
+      context: .
+    image: fig2ui_code_flow_linker
+    env_file:
+      - ./env

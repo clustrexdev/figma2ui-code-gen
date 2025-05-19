@@ -28,6 +28,8 @@ const App: React.FC = () => {
   const [fileName, setFileName] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [flows, setFlows] = useState<Flow[]>([]);
+
+  const [folderName, setFolderName] = useState<string>("");
   
   // Handle Figma URL submission
   const handleFigmaUrlSubmit = async () => {
@@ -86,19 +88,44 @@ const App: React.FC = () => {
     setIsProcessing(true);
     
     // In a real implementation, this would call your API
-    setTimeout(() => {
-      // Send message to VSCode extension
-      vscode.postMessage({
-        command: "generateCode",
-        frameId: selectedFrame.id,
-        prompt: prompt,
-        fileName: fileName,
-        settings: { uiFramework, cssFramework, uiLibrary, language }
-      });
-      
-      setIsProcessing(false);
-      setActiveTab("link");
-    }, 2000);
+    // Send message to VSCode extension
+    vscode.postMessage({
+      command: "generateCode",
+      frameId: selectedFrame.id,
+      frameUrl: selectedFrame.thumbnail, // Make sure to pass the frame URL
+      prompt: prompt,
+      fileName: fileName,
+      folderName: folderName, // Add this state if not already present
+      settings: { uiFramework, cssFramework, uiLibrary, language }
+    });
+    
+    // Listen for response from extension
+    const messageListener = (event: MessageEvent) => {
+      const message = event.data;
+      if (message.command === "codeGenerated") {
+        setIsProcessing(false);
+        
+        if (message.success) {
+          // Show success message
+          vscode.postMessage({
+            command: "showInfoMessage",
+            text: message.message
+          });
+          setActiveTab("link");
+        } else {
+          // Show error message
+          vscode.postMessage({
+            command: "showError",
+            text: message.error
+          });
+        }
+        
+        // Remove the event listener
+        window.removeEventListener("message", messageListener);
+      }
+    };
+    
+    window.addEventListener("message", messageListener);
   };
   
   // Handle flow creation
@@ -212,6 +239,8 @@ const App: React.FC = () => {
             setPrompt={setPrompt}
             fileName={fileName}
             setFileName={setFileName}
+            folderName={folderName} // Add these two lines
+            setFolderName={setFolderName}
             isProcessing={isProcessing}
             handleGenerateCode={handleGenerateCode}
           />
